@@ -3,6 +3,10 @@
 #include "smg.h"
 #include "dht11.h"
 
+
+
+static void CProcessDispatch(CProcess1 *me, uint8_t sig) ;
+
 DHT11_Data_TypeDef *DHT11;
 
 uint8_t ReceiveBuffer[1]={0};
@@ -22,6 +26,16 @@ RUN_T run_t;
        ++n; 
    }
 #endif  
+
+void CProcessRun_Init(void)
+{
+   run_t.gSig = KEY_SIG ;
+  
+   CProcessInit(&cprocess);
+
+}
+
+
 
 void CProcess_Run(void)
 {
@@ -155,7 +169,8 @@ void CProcessDispatch(CProcess1 *me, uint8_t sig)
    case IDLE: //state 
      switch (sig) {
           case KEY_SIG:
-             run_t.gTimer = 0 ;  //timer 500ms scan key value 
+             //run_t.gTimer = 0 ;  //timer 500ms scan key value 
+            
             break;
           }
      break;
@@ -170,7 +185,8 @@ void CProcessDispatch(CProcess1 *me, uint8_t sig)
                  LED_Sterilizer_On();
                  LED_Dry_On();
                  LED_AI_On();
-                Display_DHT11_Value(DHT11);
+                 //1s read one data
+                 Display_DHT11_Value(DHT11);
            break;
     
       }

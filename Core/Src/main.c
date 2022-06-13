@@ -97,7 +97,7 @@ int main(void)
   MX_TIM14_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+   CProcessRun_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,6 +107,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+      CProcess_Run();
   }
   /* USER CODE END 3 */
 }

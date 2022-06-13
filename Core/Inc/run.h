@@ -28,11 +28,13 @@ typedef struct _RUN_T{
 
 }RUN_T;
 
+#define CProcessInit(me_) ((me_)->cmdCtr__ =0,(me_)->state__ = IDLE)
+
 extern RUN_T run_t; 
 
+void CProcessRun_Init(void);
+void CProcess_Run(void);
 
-uint8_t CProcessInit(void);
-void CProcessDispatch(CProcess1 *me, uint8_t sig) ;
 
 #endif 
 
