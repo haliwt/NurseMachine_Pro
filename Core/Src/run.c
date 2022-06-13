@@ -2,6 +2,8 @@
 #include "key.h"
 #include "smg.h"
 #include "dht11.h"
+#include "fan.h"
+#include "tim.h"
 
 
 
@@ -46,7 +48,6 @@ void CProcess_Run(void)
        
          case 0x80: //CIN0 -> POWER KEY 
              run_t.gSig = POWER_SIG ;
-             run_t.gRun_flag = POWER_SIG;
              cprocess.state__ =  CODE ;
              cprocess.cmdCtr__ = 1;
          break;
@@ -58,10 +59,7 @@ void CProcess_Run(void)
                  cprocess.cmdCtr__ = 3;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
-             
-             }
+          
          break;
          
          case 0x20: //CIN2 ->ADD KEY
@@ -71,10 +69,7 @@ void CProcess_Run(void)
                   cprocess.cmdCtr__ = 5;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
-             
-             }
+            
              
          break;
          
@@ -85,10 +80,7 @@ void CProcess_Run(void)
                  cprocess.cmdCtr__ = 7;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
-             
-             }
+           
              
          break;
          
@@ -99,10 +91,7 @@ void CProcess_Run(void)
                    cprocess.cmdCtr__ = 11;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
-             
-             }
+            
          break;
          
          case 0x04: //CIN5  -> STERILIZATION KEY 
@@ -112,10 +101,7 @@ void CProcess_Run(void)
                    cprocess.cmdCtr__ = 13;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
-             
-             }
+            
             
          break;
          
@@ -126,10 +112,7 @@ void CProcess_Run(void)
                     cprocess.cmdCtr__ = 15;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
-             
-             }
+           
              
          break;
          
@@ -140,11 +123,11 @@ void CProcess_Run(void)
                    cprocess.cmdCtr__ = 17;
              
              }
-             else{
-                run_t.gSig = KEY_SIG ;
+          
+         break;
              
-             }
-             
+         default:
+              run_t.gSig = KEY_SIG;
          break;
        
        } //switch(ReceiveBuffer) --end 
@@ -163,7 +146,7 @@ void CProcess_Run(void)
 *Return Ref : NO
 *
 ************************************************************************/ 
-void CProcessDispatch(CProcess1 *me, uint8_t sig)
+static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
    switch (me->state__) {
    case IDLE: //state 
@@ -177,8 +160,9 @@ void CProcessDispatch(CProcess1 *me, uint8_t sig)
      case CODE: //state 
       switch (sig) {
           case POWER_SIG:
-               me->cmdCtr__ = 2;     /* SLASH-STAR count as comment */
-                 if(run_t.gTimer_500ms ==1){
+                me->cmdCtr__ = 2;     /* SLASH-STAR count as comment */
+                if(run_t.gTimer_500ms ==1){
+                     run_t.gRun_flag = POWER_SIG;
                      run_t.gTimer_500ms = 0;
                      LED_Power_On();
                      LED_MODE_On();
@@ -187,12 +171,23 @@ void CProcessDispatch(CProcess1 *me, uint8_t sig)
                      LED_Sterilizer_On();
                      LED_Dry_On();
                      LED_AI_On();
+                     //open PTC and FAN ,Ultrasonic 
+                     FAN_CCW_RUN();    //FAN ON 
+                     PLASMA_SetHigh() ; //sterilization ON
+                     PTC_SetHigh() ; //PTC ON   
+                     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
+                    
                  }
                  if(run_t.gTimer_1s==1){//1s read one data
                    Display_DHT11_Value(DHT11);
                    run_t.gTimer_1s =0;
                  }
            break;
+                 
+          case RUN_SIG:
+              
+              
+          break;
     
       }
       break;
