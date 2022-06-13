@@ -1,6 +1,9 @@
 #include "run.h"
 #include "key.h"
 #include "smg.h"
+#include "dht11.h"
+
+DHT11_Data_TypeDef *DHT11;
 
 uint8_t ReceiveBuffer[1]={0};
 static CProcess1 cprocess;
@@ -167,6 +170,7 @@ void CProcessDispatch(CProcess1 *me, uint8_t sig)
                  LED_Sterilizer_On();
                  LED_Dry_On();
                  LED_AI_On();
+                Display_DHT11_Value(DHT11);
            break;
     
       }

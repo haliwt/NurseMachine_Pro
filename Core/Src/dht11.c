@@ -1,4 +1,5 @@
 #include "dht11.h"
+#include "smg.h"
 
 /* 私有类型定义 --------------------------------------------------------------*/
 /* 私有宏定义 ----------------------------------------------------------------*/
@@ -9,6 +10,11 @@
 //static void DHT11_Mode_IPU(void);
 //static void DHT11_Mode_Out_PP(void);
 static uint8_t DHT11_ReadByte(void);
+static uint8_t DHT11_Read_TempAndHumidity(DHT11_Data_TypeDef * DHT11_Data);
+
+
+
+
 extern DHT11_Data_TypeDef DHT11_Data;
 #define Bit_RESET 0
 #define Bit_SET   1
@@ -173,6 +179,28 @@ uint8_t DHT11_Read_TempAndHumidity(DHT11_Data_TypeDef *DHT11_Data)
 	}	
 	else
 		return ERROR; //ERROR  = 1
+}
+
+
+void Display_DHT11_Value(DHT11_Data_TypeDef *DHT11)
+{
+    
+    static uint8_t hum1,hum2,temp1,temp2; 
+    
+    
+    if(DHT11_Read_TempAndHumidity(DHT11) != 1){
+        
+        hum1 = (DHT11->humi_high8bit)/10 %10;
+        hum2 = (DHT11->humi_high8bit)%10;
+        
+        temp1 = (DHT11->temp_high8bit)/10 %10;
+        temp2 = (DHT11->temp_high8bit)%10;
+    
+        TM1640_Write_2bit_TempData(hum1,hum2);
+        TM1640_Write_2bit_HumData(temp1,temp2);
+    
+    }
+    
 }
 
 
