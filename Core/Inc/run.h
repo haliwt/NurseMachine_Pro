@@ -23,6 +23,7 @@ typedef struct _RUN_T{
    uint8_t gKeyValue;   
    uint8_t gSig;
    uint8_t gRun_flag;
+   uint16_t gTimer;
 
 
 }RUN_T;

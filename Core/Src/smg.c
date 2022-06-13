@@ -224,7 +224,7 @@ void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
 *Return Ref: NO
     *
 *****************************************************************************/
-void LED_Power(void)
+void LED_Power_On(void)
 {
      
      TM1640_Start();
@@ -254,7 +254,7 @@ void LED_Power(void)
 *
 *
 **************************************************************/
-void LED_TempHum(void)
+void LED_TempHum_On(void)
 {
      TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -279,7 +279,7 @@ void LED_TempHum(void)
 
 }
 
-void LED_MODE(void)
+void LED_MODE_On(void)
 {
      TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -304,7 +304,7 @@ void LED_MODE(void)
 
 }
 
-void LED_Fan(void)
+void LED_Fan_On(void)
 {
      TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -328,7 +328,7 @@ void LED_Fan(void)
 
 
 }
-void LED_Sterilizer(void)
+void LED_Sterilizer_On(void)
 {
     TM1640_Start();
     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -349,7 +349,7 @@ void LED_Sterilizer(void)
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
 }
-void LED_Dry(void)
+void LED_Dry_On(void)
 {
      TM1640_Start();
     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -372,7 +372,7 @@ void LED_Dry(void)
 
 
 }
-void LED_AI(void)
+void LED_AI_On(void)
 {
    TM1640_Start();
     TM1640_Write_OneByte(AddrFixed);//Add fixed reg

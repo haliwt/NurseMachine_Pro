@@ -1,5 +1,6 @@
 #include "run.h"
 #include "key.h"
+#include "smg.h"
 
 uint8_t ReceiveBuffer[1]={0};
 static CProcess1 cprocess;
@@ -37,6 +38,7 @@ void CProcess_Run(void)
              if(run_t.gRun_flag ==POWER_SIG){
                  run_t.gSig = MODE_SIG;
                  cprocess.state__ =  RUN ;
+                 cprocess.cmdCtr__ = 3;
              
              }
              else{
@@ -48,6 +50,8 @@ void CProcess_Run(void)
          case 0x20: //CIN2 ->ADD KEY
              if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = ADD_SIG;
+                  cprocess.state__ =  RUN ;
+                  cprocess.cmdCtr__ = 5;
              
              }
              else{
@@ -60,6 +64,8 @@ void CProcess_Run(void)
          case 0x10: //CIN3 -> DEC KEY
              if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = DEC_SIG;
+                  cprocess.state__ =  RUN ;
+                 cprocess.cmdCtr__ = 7;
              
              }
              else{
@@ -72,6 +78,8 @@ void CProcess_Run(void)
          case 0x08: //CIN4 -> FAN KEY 
                if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = FAN_SIG;
+                   cprocess.state__ =  RUN ;
+                   cprocess.cmdCtr__ = 11;
              
              }
              else{
@@ -83,6 +91,8 @@ void CProcess_Run(void)
          case 0x04: //CIN5  -> STERILIZATION KEY 
              if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = STER_SIG;
+                  cprocess.state__ =  RUN ;
+                   cprocess.cmdCtr__ = 13;
              
              }
              else{
@@ -95,6 +105,8 @@ void CProcess_Run(void)
          case 0x02: //CIN6  ->DRY KEY 
                if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = DRY_SIG;
+                    cprocess.state__ =  RUN ;
+                    cprocess.cmdCtr__ = 15;
              
              }
              else{
@@ -107,6 +119,8 @@ void CProcess_Run(void)
          case 0x01: //CIN7 -> AI KEY
                if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = AI_SIG;
+                   cprocess.state__ =  RUN ;
+                   cprocess.cmdCtr__ = 17;
              
              }
              else{
@@ -117,53 +131,76 @@ void CProcess_Run(void)
          break;
        
        } //switch(ReceiveBuffer) --end 
-      CProcessDispatch(&cprocess, run_t.gSig);
+      
     }
-
-
+    CProcessDispatch(&cprocess, run_t.gSig);
+    
 }
     
 
- 
- 
-uint8_t CProcessInit(void)
-{
-    
-    run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
-    return run_t.gKeyValue;
-   
-}
-
-
+/************************************************************************
+*
+*Functin Name :void CProcessDispatch(CProcess1 *me, uint8_t sig)
+*Function : dispatch task 
+*Input Ref: CProcess *me -> pointer is state , sig - special signale
+*Return Ref : NO
+*
+************************************************************************/ 
 void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
    switch (me->state__) {
-   case IDLE:
+   case IDLE: //state 
+     switch (sig) {
+          case KEY_SIG:
+             run_t.gTimer = 0 ;  //timer 500ms scan key value 
+            break;
+          }
+     break;
+     case CODE: //state 
       switch (sig) {
-      case KEY_SIG:
-       //  CParser1Tran(me, SLASH);         /* transition to "slash" */
-         break;
+          case POWER_SIG:
+               me->cmdCtr__ = 2;     /* SLASH-STAR count as comment */
+                 LED_Power_On();
+                 LED_MODE_On();
+                 LED_TempHum_On();
+                 LED_Fan_On();
+                 LED_Sterilizer_On();
+                 LED_Dry_On();
+                 LED_AI_On();
+           break;
+    
       }
       break;
-   case CODE:
+   case RUN: //state
       switch (sig) {
-      case POWER_SIG:
-         me->cmdCtr__ += 2;     /* SLASH-STAR count as comment */
-        // CParser1Tran(me, COMMENT);     /* transition to "comment" */
-         break;
-      case RUN_SIG:
-      
-        // CParser1Tran(me, CODE);              /* go back to "code" */
-         break;
-      }
-      break;
-   case RUN:
-      switch (sig) {
-      case START_SIG:
-           // CParser1Tran(me, STAR);           /* transition to "star" */
-     
-         ++me->cmdCtr__;             /* count the comment char */
-         break; 
+       
+          case MODE_SIG:
+              
+            break;
+          case ADD_SIG:
+              
+          break; 
+          
+          case DEC_SIG:
+              
+          break;
+          
+          case FAN_SIG :
+              
+          break;
+          
+          case DRY_SIG:
+              
+          break;
+          
+          case STER_SIG:
+              
+          break;
+          
+          case AI_SIG:
+              
+          break;
+          
       }
       break;
   
