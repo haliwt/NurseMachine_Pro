@@ -13,7 +13,7 @@ extern DHT11_Data_TypeDef DHT11_Data;
 #define Bit_RESET 0
 #define Bit_SET   1
 
-void delay_us(unsigned long i);
+void delay_us(uint16_t i);
 /* 函数体 --------------------------------------------------------------------*/
 /**
   * 函数功能: 
@@ -22,12 +22,12 @@ void delay_us(unsigned long i);
   * 说    明：无
   */
 	
-void delay_us(unsigned long i)
+void delay_us(uint16_t i)
 {
 	unsigned long j;
 	for(i;i>0;i--)
 	{
-			for(j=6;j>0;j--);
+	   for(j=6;j>0;j--);
 	}
 }
 static void DHT11_Delay(uint16_t time)
@@ -166,13 +166,13 @@ uint8_t DHT11_Read_TempAndHumidity(DHT11_Data_TypeDef *DHT11_Data)
            DHT11_Data->temp_high8bit+ DHT11_Data->temp_low8bit;
     if(DHT11_Data->check_sum==temp)
     { 
-      return SUCCESS;
+      return SUCCESS;  //SUCCESS = 0 
     }
     else 
       return ERROR;
 	}	
 	else
-		return ERROR;
+		return ERROR; //ERROR  = 1
 }
 
 
