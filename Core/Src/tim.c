@@ -25,6 +25,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
+#include "run.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -306,6 +307,28 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  //timer_count++;
+    static uint8_t temp,t2,t3;
+    
+    if(htim->Instance==TIM3){
+       temp ++ ;
+       if(temp ==100){ //100ms
+          temp =0;
+          t2++;
+          t3++;
+          if(t2 ==5){
+             t2=0;
+             run_t.gTimer_500ms = 1;
+          
+          }
+          if(t3==10){ //100 *10 =1000ms = 1s
+              t3=0;
+              run_t.gTimer_1s =1;
+          }
+       }
+       
+    
+    }
+    
+   
 }
 /* USER CODE END 1 */

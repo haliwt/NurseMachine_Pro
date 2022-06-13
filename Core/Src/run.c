@@ -178,15 +178,20 @@ void CProcessDispatch(CProcess1 *me, uint8_t sig)
       switch (sig) {
           case POWER_SIG:
                me->cmdCtr__ = 2;     /* SLASH-STAR count as comment */
-                 LED_Power_On();
-                 LED_MODE_On();
-                 LED_TempHum_On();
-                 LED_Fan_On();
-                 LED_Sterilizer_On();
-                 LED_Dry_On();
-                 LED_AI_On();
-                 //1s read one data
-                 Display_DHT11_Value(DHT11);
+                 if(run_t.gTimer_500ms ==1){
+                     run_t.gTimer_500ms = 0;
+                     LED_Power_On();
+                     LED_MODE_On();
+                     LED_TempHum_On();
+                     LED_Fan_On();
+                     LED_Sterilizer_On();
+                     LED_Dry_On();
+                     LED_AI_On();
+                 }
+                 if(run_t.gTimer_1s==1){//1s read one data
+                   Display_DHT11_Value(DHT11);
+                   run_t.gTimer_1s =0;
+                 }
            break;
     
       }
