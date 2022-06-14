@@ -339,6 +339,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
               if(run_t.gTimer_Cmd ==1){
                    run_t.gTime_hour -- ;
                    if(run_t.gTime_hour==0){
+                     
                      run_t.gPower_Cmd =1;
                    }
               }

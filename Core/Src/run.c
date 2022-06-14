@@ -167,7 +167,10 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
       switch (sig) {
           case POWER_SIG:
                 me->cmdCtr__ = 2;     /* SLASH-STAR count as comment */
-                if(run_t.gTimer_500ms ==1){
+                switch(run_t.gPower_Cmd){
+                
+                    case 0:
+                     if(run_t.gTimer_500ms ==1){
                      run_t.gRun_flag = POWER_SIG;
                      run_t.gTimer_500ms = 0;
                      LED_Power_On();
@@ -184,11 +187,18 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                      PTC_SetHigh() ; //PTC ON   
                      HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
                     
-                 }
-                 if(run_t.gTimer_1s==1){//1s read one data
-                   Display_DHT11_Value(DHT11);
-                   run_t.gTimer_1s =0;
-                 }
+                   }
+                   if(run_t.gTimer_1s==1){//1s read one data
+                       Display_DHT11_Value(DHT11);
+                       run_t.gTimer_1s =0;
+                  }
+                 break;
+                  
+                    case 1:
+                         me->state__=IDLE;
+                         sig =KEY_SIG ;
+                    break;
+             }
            break;
                  
           case RUN_SIG:
@@ -257,28 +267,6 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
               
           break; 
              
-          case START_SIG:
-               if(run_t.gKeyLong ==1 && (fira !=0 || fird !=0)){
-                 if(run_t.gTimer_key_5s==1){
-                    run_t.gTimer_Cmd =1;
-                    run_t.gTime_hour = (m*10 + n)*3600;  
-                    run_t.gKeyLongPressed =0;
-                 
-                 }
-               
-               }
-               else{
-                  if(run_t.gTimer_key_5s==1 && (run_t.gKeyLong ==1)){
-                     run_t.gTimer_Cmd =1;
-                    run_t.gTime_hour = 12*3600; //hours
-                    run_t.gKeyLongPressed =0;
-                 }
-               
-               
-               }
-          
-          break;
-          
           case DEC_SIG:
               if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
                    if(fird == 0){
@@ -299,11 +287,47 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                        
                    }
                  
-                TM1640_Write_4Bit_Data(m,n,0x00,0x00,1) ;                   
-             
+                 TM1640_Write_4Bit_Data(0,0,m,n,1) ;                  
+                 sig = START_SIG ;    
              }
               
           break;
+             
+           case START_SIG:
+               if(run_t.gKeyLong ==1 && (fira !=0 || fird !=0)){
+                 if(run_t.gTimer_key_5s==1){
+            
+                    run_t.gTime_hour = (m*10 + n)*3600;  
+                     
+                    if(run_t.gTime_hour ==0)run_t.gTimer_Cmd =0;
+                    else run_t.gTimer_Cmd =1;
+                     
+                    run_t.gKeyLongPressed =0;
+                    //state tran
+                    me->state__=CODE;
+                    sig =POWER_SIG;
+                 
+                 }
+               
+               }
+               else{
+                  if(run_t.gTimer_key_5s==1 && (run_t.gKeyLong ==1)){
+                    run_t.gTimer_Cmd =1;
+                    run_t.gTime_hour = 12*3600; //hours
+                    
+                    run_t.gKeyLongPressed =0;
+                     //state tran
+                    me->state__=CODE;
+                    sig =POWER_SIG;
+                 }
+               
+               
+               }
+               
+          
+          break;
+             
+             
           
           case FAN_SIG :
               
