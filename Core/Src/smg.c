@@ -14,6 +14,7 @@
 #define HOUR            (seg_b + seg_c + seg_e+ seg_f + seg_g)
 
 #define TIMELED         (seg_e)
+#define OFFLED           0
 
 
 const unsigned char segNumber[]={
@@ -107,8 +108,11 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
      TM1640_Write_OneByte(0xC0);//0xC0H->GRID1->BIT_1
      if(sl ==0)
          TM1640_Write_OneByte(segNumber[onebit]);//display "1"
-     else{
+     else if(sl==1){
         TM1640_Write_OneByte(HOUR);//display "H"
+     }
+     else if(sl==2){ //turn off SMG display
+        TM1640_Write_OneByte(OFFLED);//display "NULL"
      }
      TM1640_Stop();
     
@@ -116,36 +120,36 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
      TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
      if(sl==0)
           TM1640_Write_OneByte(segNumber[twobit]);//display "2"
-     else{
+     else if(sl ==1){
           TM1640_Write_OneByte(segNumber[0]);//display "0"  
       }
+     else if(sl==2){
+        TM1640_Write_OneByte(OFFLED);//display "NULL"
+     }
      TM1640_Stop();
     
     //diplay ":"
     TM1640_Start();
     TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
-    TM1640_Write_OneByte(DOUBLEDOT);//display ":"
+    if(sl == 2) TM1640_Write_OneByte(OFFLED);//display "NULL"
+    else TM1640_Write_OneByte(DOUBLEDOT);//display ":"
     TM1640_Stop();
     
     //minute 
     TM1640_Start();
     TM1640_Write_OneByte(0xC2);//0xC2H->GRID3->BIT_3
-    TM1640_Write_OneByte(segNumber[threebit]);//display ""
+    if(sl==2)TM1640_Write_OneByte(OFFLED);//display "NULL"
+    else TM1640_Write_OneByte(segNumber[threebit]);//display ""
     TM1640_Stop();
     
     //minute 
     TM1640_Start();
     TM1640_Write_OneByte(0xC3);//0xC2H->GRID3->BIT_3
-    TM1640_Write_OneByte(segNumber[fourbit]);//display ""
+    if(sl==2)TM1640_Write_OneByte(OFFLED);//display "NULL"
+    else TM1640_Write_OneByte(segNumber[fourbit]);//display ""
     TM1640_Stop();
     
     //open diplay
-    
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
     TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//0xC2H->GRID3->BIT_3
     TM1640_Stop();
@@ -179,10 +183,7 @@ void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit)
      TM1640_Stop();
     
      //open diplay
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
+   
     TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
@@ -216,10 +217,6 @@ void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
     
      //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
     
@@ -245,12 +242,7 @@ void LED_Power_On(void)
      TM1640_Write_OneByte(POWERLED);//display "power Key"
      TM1640_Stop();
 
-    //open diplay
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
+    //open diplay 
     TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
@@ -276,11 +268,6 @@ void LED_TempHum_On(void)
 
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
-    TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
 
@@ -301,11 +288,6 @@ void LED_MODE_On(void)
 
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
-    TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
 
@@ -313,7 +295,7 @@ void LED_MODE_On(void)
 
 }
 
-void LED_Fan_On(void)
+void LED_Fan_OnOff(uint8_t sel)
 {
      TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -321,15 +303,14 @@ void LED_Fan_On(void)
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCD);//0xCDH->GRID14
-     TM1640_Write_OneByte(FANLED);//display "FAN led"
+     if(sel==0)
+        TM1640_Write_OneByte(FANLED);//display "FAN led"
+     else
+        TM1640_Write_OneByte(OFFLED);//display "FAN led"
      TM1640_Stop();
 
     //open diplay
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
+ 
     TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
@@ -337,7 +318,7 @@ void LED_Fan_On(void)
 
 
 }
-void LED_Sterilizer_On(void)
+void LED_Sterilizer_OnOff(uint8_t sel)
 {
     TM1640_Start();
     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -345,20 +326,18 @@ void LED_Sterilizer_On(void)
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCC);//0xCCH->GRID13
-     TM1640_Write_OneByte(STERLED);//display "temperature led"
+     if(sel==0)
+       TM1640_Write_OneByte(STERLED);//display "temperature led"
+     else 
+        TM1640_Write_OneByte(OFFLED);//display "NULL"
      TM1640_Stop();
 
     //open diplay
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
-    TM1640_Start();
+   TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
 }
-void LED_Dry_On(void)
+void LED_Dry_OnOff(uint8_t sel)
 {
      TM1640_Start();
     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -366,22 +345,20 @@ void LED_Dry_On(void)
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCB);//0xCBH->GRID12
-     TM1640_Write_OneByte(DRYLED);//display "temperature led"
+     if(sel==0)
+        TM1640_Write_OneByte(DRYLED);//display "temperature led"
+     else 
+        TM1640_Write_OneByte(OFFLED);//display "temperature led"
      TM1640_Stop();
 
     //open diplay
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
-    TM1640_Start();
+   TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
 
 
 }
-void LED_AI_On(void)
+void LED_AI_OnOff(uint8_t sel)
 {
    TM1640_Start();
     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -389,15 +366,14 @@ void LED_AI_On(void)
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCA);//0xCAH->GRID11
-     TM1640_Write_OneByte(AILED);//display "temperature led"
+     if(sel==0)
+           TM1640_Write_OneByte(AILED);//display "temperature led"
+     else{
+        TM1640_Write_OneByte(OFFLED);//display "NULL"
+     }
      TM1640_Stop();
 
     //open diplay
-    TM1640_Start();
-    TM1640_Write_OneByte(Set14_16TM1640);//display Freq
-    TM1640_Stop();
-    
-    
     TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
     TM1640_Stop();
@@ -405,7 +381,7 @@ void LED_AI_On(void)
 
 }
 
-void TM1640_TimeLed_On()
+void TM1640_TimeLed_OnOff(uint8_t sel)
 {
     TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -413,7 +389,11 @@ void TM1640_TimeLed_On()
     
      TM1640_Start();
      TM1640_Write_OneByte(0xC9);//0xC9H->GRID10
-     TM1640_Write_OneByte(TIMELED);//display "time led"
+     if(sel==0)
+         TM1640_Write_OneByte(TIMELED);//display "time led"
+     else{
+         TM1640_Write_OneByte(OFFLED);//display "time led"
+     }
      TM1640_Stop();
 
     //open diplay
@@ -423,13 +403,4 @@ void TM1640_TimeLed_On()
 
 }
 
-void TM1640_TimLed_Off(void)
-{
-    //open diplay -> reduce led bright
-    TM1640_Start();
-    TM1640_Write_OneByte(Set1_16TM1640);//
-    TM1640_Stop();
-
-
-}
 

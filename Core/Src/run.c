@@ -151,7 +151,8 @@ void CProcess_Run(void)
 ************************************************************************/ 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
-   static uint8_t fira,fird;
+   static uint8_t fira,fird,fan,dry,ster,ai;
+   static uint8_t fanflag,dryflag,sterflag,aiflag;
    static int8_t n,m;
     
    switch (me->state__) {
@@ -171,21 +172,30 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                 
                     case 0:
                      if(run_t.gTimer_500ms ==1){
-                     run_t.gRun_flag = POWER_SIG;
-                     run_t.gTimer_500ms = 0;
-                     LED_Power_On();
-                     LED_MODE_On();
-                     LED_TempHum_On();
-                     LED_Fan_On();
-                     LED_Sterilizer_On();
-                     LED_Dry_On();
-                     LED_AI_On();
-                     //open PTC and FAN ,Ultrasonic 
-                     TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
-                     FAN_CCW_RUN();    //FAN ON 
-                     PLASMA_SetHigh() ; //sterilization ON
-                     PTC_SetHigh() ; //PTC ON   
-                     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
+                         run_t.gRun_flag = POWER_SIG;
+                         run_t.gTimer_500ms = 0;
+                         LED_Power_On();
+                         LED_MODE_On();
+                         LED_TempHum_On();
+                         
+                         if(fan==0)LED_Fan_OnOff(0);
+                         else LED_Fan_OnOff(1);
+                         
+                         if(ster==0)LED_Sterilizer_OnOff(0);
+                         else  LED_Sterilizer_OnOff(1);
+                            
+                              
+                         if(dry==0)LED_Dry_OnOff(0);
+                         else LED_Dry_OnOff(1);
+                         
+                         if(ai==0)LED_AI_OnOff(0);
+                         else LED_AI_OnOff(1);
+                         //open PTC and FAN ,Ultrasonic 
+                         TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
+                         FAN_CCW_RUN();    //FAN ON 
+                         PLASMA_SetHigh() ; //sterilization ON
+                         PTC_SetHigh() ; //PTC ON   
+                         HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
                     
                    }
                    if(run_t.gTimer_1s==1){//1s read one data
@@ -215,11 +225,8 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
            if(run_t.gKeyLongPressed > 300){  //Mode key be pressed long   
                run_t.gKeyLong =1;
                run_t.gTimer_start =1; //timer is 5s start 
-               TM1640_Write_4Bit_Data(0x00,0x0,0x01,0x02,1) ; //timer is default 12 hours "H0:12"
-               if(run_t.gTimer_key_2s==1){
-                  TM1640_TimLed_Off();
-                     
-               }
+              // TM1640_Write_4Bit_Data(0x00,0x0,0x01,0x02,1) ; //timer is default 12 hours "H0:12"
+               
               sig = START_SIG ; 
            } 
            else{ //shot be pressed 
@@ -256,7 +263,8 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                     }
                      
                   }
-                TM1640_Write_4Bit_Data(0,0,m,n,1) ;   
+                TM1640_Write_4Bit_Data(0,0,m,n,1) ;
+                run_t.gTimer_start =1;                    
                 sig = START_SIG ;                  
              
              }
@@ -269,6 +277,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
              
           case DEC_SIG:
               if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
+                   run_t.gTimer_start =0;
                    if(fird == 0){
                       fird =1;
                        n = 1;
@@ -287,7 +296,8 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                        
                    }
                  
-                 TM1640_Write_4Bit_Data(0,0,m,n,1) ;                  
+                 TM1640_Write_4Bit_Data(0,0,m,n,1) ;  
+                 run_t.gTimer_start =1;                   
                  sig = START_SIG ;    
              }
               
@@ -303,7 +313,10 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                     else run_t.gTimer_Cmd =1;
                      
                     run_t.gKeyLongPressed =0;
-                    //state tran
+                    run_t.gKeyLong=0;
+                    fira=0;
+                    fird =0;
+                    //state transfer
                     me->state__=CODE;
                     sig =POWER_SIG;
                  
@@ -316,32 +329,94 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                     run_t.gTime_hour = 12*3600; //hours
                     
                     run_t.gKeyLongPressed =0;
-                     //state tran
+                    run_t.gKeyLong=0;
+                     //state transfer
                     me->state__=CODE;
                     sig =POWER_SIG;
                  }
+              }
                
+             if(fira !=0 || fird !=0){ //blank SMG effect
+                 TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
+             }
+             else{
+                 TM1640_Write_4Bit_Data(0,0,1,2,1) ; //timer is default 12 hours "H0:12"
+             
+             }
+              
+             if(run_t.gKeyLong==1){ //turn off Smg display 
+                  
+                  if(run_t.gTimer_key_2s==1){
+                      run_t.gTimer_key_2s=0;
+                      TM1640_Write_4Bit_Data(0,0,1,2,2) ; //turn off 4BIT smg
+                  }
+             
+             }
                
-               }
-               
-          
           break;
              
              
           
           case FAN_SIG :
+              fanflag = fanflag ^ 0x01;
+              if(fanflag == 1){
+                  fan = 1;
+              
+              }
+              else{
+                 fan =0;
+              
+              }
+              //state transfer
+             me->state__=CODE;
+             sig =POWER_SIG;
+              
               
           break;
           
           case DRY_SIG:
+              dryflag = dryflag ^ 0x01;
+              if(dryflag ==1){
+                  dry=1;
+              }
+              else{
+                  dry=0;
+              }
+              //state transfer
+             me->state__=CODE;
+             sig =POWER_SIG;
               
           break;
           
           case STER_SIG:
+              sterflag = sterflag ^ 0x01;
+              if(sterflag==1){
+                 ster =1;
+              }
+              else{
+               ster =0;  
+              
+              }
+             //state transfer
+             me->state__=CODE;
+             sig =POWER_SIG;
               
           break;
           
           case AI_SIG:
+              aiflag = aiflag ^ 0x01;
+              if(aiflag==1){
+                  ai =1;
+              
+              }
+              else{
+                 ai =0;
+              
+              }
+              
+            //state transfer
+             me->state__=CODE;
+             sig =POWER_SIG;
               
           break;
           
