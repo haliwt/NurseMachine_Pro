@@ -28,7 +28,7 @@
 #define AddrFixed 	       0x44// 
  
 
-#define OpenDispTM1640          0x88//
+#define OpenDispTM1640          0x8F//
 #define CloseDisTM1640		    0x80// 
 
  
@@ -52,7 +52,7 @@
 
 
 
- 
+#define Set1_16TM1640           0X88
 
 #define Set14_16TM1640 		    0X8F//??????? 14/16 
 
@@ -71,8 +71,8 @@
 void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit,uint8_t sl);
 void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit);
 void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
-
-
+void TM1640_TimeLed_On(void);
+void TM1640_TimLed_Off(void);
 
 void LED_Power_On(void);
 void LED_MODE_On(void);

@@ -13,6 +13,7 @@
 #define AILED           (seg_g + seg_f)
 #define HOUR            (seg_b + seg_c + seg_e+ seg_f + seg_g)
 
+#define TIMELED         (seg_e)
 
 
 const unsigned char segNumber[]={
@@ -92,7 +93,7 @@ static void TM1640_Write_OneByte(uint8_t data)
     *
 *Function Name:void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit)
 *Function :Smg display times hour minute
-*Input Ref: onebit ,twobit hours ,threebit fourbit minute
+*Input Ref: onebit ,twobit hours ,threebit fourbit minute,sl -select "H" or "numbers"
 *Return Ref: NO
     *
 ********************************************************************************************************/
@@ -113,7 +114,11 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     
      TM1640_Start();
      TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
-     TM1640_Write_OneByte(segNumber[twobit]);//display "2"
+     if(sl==0)
+          TM1640_Write_OneByte(segNumber[twobit]);//display "2"
+     else{
+          TM1640_Write_OneByte(segNumber[0]);//display "0"  
+      }
      TM1640_Stop();
     
     //diplay ":"
@@ -395,6 +400,34 @@ void LED_AI_On(void)
     
     TM1640_Start();
     TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Stop();
+
+
+}
+
+void TM1640_TimeLed_On()
+{
+    TM1640_Start();
+     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
+     TM1640_Stop();
+    
+     TM1640_Start();
+     TM1640_Write_OneByte(0xC9);//0xC9H->GRID10
+     TM1640_Write_OneByte(TIMELED);//display "time led"
+     TM1640_Stop();
+
+    //open diplay
+    TM1640_Start();
+    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Stop();
+
+}
+
+void TM1640_TimLed_Off(void)
+{
+    //open diplay -> reduce led bright
+    TM1640_Start();
+    TM1640_Write_OneByte(Set1_16TM1640);//
     TM1640_Stop();
 
 

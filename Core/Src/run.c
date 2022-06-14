@@ -151,6 +151,9 @@ void CProcess_Run(void)
 ************************************************************************/ 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
+   static uint8_t fira,fird;
+   static int8_t n,m;
+    
    switch (me->state__) {
    case IDLE: //state 
      switch (sig) {
@@ -200,19 +203,105 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
        
           case MODE_SIG:
            if(run_t.gKeyLongPressed > 300){  //Mode key be pressed long   
-                
+               run_t.gKeyLong =1;
+               run_t.gTimer_start =1; //timer is 5s start 
+               TM1640_Write_4Bit_Data(0x00,0x0,0x01,0x02,1) ; //timer is default 12 hours "H0:12"
+               if(run_t.gTimer_key_2s==1){
+                  TM1640_TimLed_Off();
+                     
+               }
+              sig = START_SIG ; 
            } 
            else{ //shot be pressed 
-             TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,1) ;  //display times  4bit //display times of timer "HXX"
-                
+               if((fira !=0 || fird !=0)){
+                   TM1640_Write_4Bit_Data(0,0,m,n,1) ;   
+               }
+               else{
+                  TM1640_Write_4Bit_Data(0x0,0x0,0x01,0x02,1) ;  //display times  4bit //display times of timer "H0:XX"
+               }
+               run_t.gKeyLong =0;
+               run_t.gKeyLongPressed=0;
            
            }
             break;
           case ADD_SIG:
+             if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
+                   run_t.gTimer_start =0;
+                   if(fira == 0){
+                      fira =1;
+                       n = 3;
+                   }
+                   else{
+                      n ++;
+                       
+                   }
+                   if(n ==10 && m< 3){
+                      n=0;
+                      m++;
+                   }
+                  if(m==2){
+                    if(n> 4){
+                       m=0;
+                       n=0;
+                    }
+                     
+                  }
+                TM1640_Write_4Bit_Data(0,0,m,n,1) ;   
+                sig = START_SIG ;                  
+             
+             }
+             else{
+          
+             
+             }
               
           break; 
+             
+          case START_SIG:
+               if(run_t.gKeyLong ==1 && (fira !=0 || fird !=0)){
+                 if(run_t.gTimer_key_5s==1){
+                    run_t.gTimer_Cmd =1;
+                    run_t.gTime_hour = (m*10 + n)*3600;  
+                    run_t.gKeyLongPressed =0;
+                 
+                 }
+               
+               }
+               else{
+                  if(run_t.gTimer_key_5s==1 && (run_t.gKeyLong ==1)){
+                     run_t.gTimer_Cmd =1;
+                    run_t.gTime_hour = 12*3600; //hours
+                    run_t.gKeyLongPressed =0;
+                 }
+               
+               
+               }
+          
+          break;
           
           case DEC_SIG:
+              if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
+                   if(fird == 0){
+                      fird =1;
+                       n = 1;
+                   }
+                   else{
+                      n --;
+                       
+                   }
+                 if(n < 0 ){
+                      n=9;
+                      m--;
+                     if(m < 0 ){
+                        n=4;
+                        m=2;
+                      }
+                       
+                   }
+                 
+                TM1640_Write_4Bit_Data(m,n,0x00,0x00,1) ;                   
+             
+             }
               
           break;
           

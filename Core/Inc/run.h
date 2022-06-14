@@ -20,12 +20,18 @@ struct CProcess1 {
 
 typedef struct _RUN_T{
 
+   uint8_t gPower_Cmd;
    uint8_t gKeyValue;   
    uint8_t gSig;
    uint8_t gRun_flag;
    uint8_t gTimer_500ms;
    uint8_t gTimer_1s;
    uint8_t gTimer_key_2s;
+   uint8_t gKeyLong;
+   uint8_t gTimer_key_5s;
+   uint8_t  gTimer_start;
+   uint8_t gTimer_Cmd;
+   uint16_t gTime_hour;
    uint16_t gKeyLongPressed;
 
 }RUN_T;
