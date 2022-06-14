@@ -36,7 +36,7 @@
 
 
 void FAN_CCW_RUN(void);
-void Motor_Stop(void);
+void FAN_Stop(void);
 
 
 

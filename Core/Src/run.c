@@ -99,7 +99,7 @@ void CProcess_Run(void)
          
          case 0x04: //CIN5  -> STERILIZATION KEY 
              if(run_t.gRun_flag ==POWER_SIG){
-                  run_t.gSig = STER_SIG;
+                  run_t.gSig = PLASMA_SIG;
                   cprocess.state__ =  RUN ;
                    cprocess.cmdCtr__ = 13;
              
@@ -153,7 +153,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
    static uint8_t fira,fird,fan,dry,ster,ai;
    static uint8_t fanflag,dryflag,sterflag,aiflag;
-   static int8_t n,m;
+   static int8_t n,m,p,q;
     
    switch (me->state__) {
    case IDLE: //state 
@@ -178,27 +178,60 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                          LED_MODE_On();
                          LED_TempHum_On();
                          
-                         if(fan==0)LED_Fan_OnOff(0);
-                         else LED_Fan_OnOff(1);
+                         if(fan==0){ //0 -ON
+                            LED_Fan_OnOff(0);
+                            FAN_CCW_RUN();
+                            run_t.gFan_flag=1;
+                         }
+                         else{ //1-OFF
+                            LED_Fan_OnOff(1);
+                            PTC_SetLow(); //PTC turn off 
+                            FAN_Stop();
+                            run_t.gFan_flag=0;
+                         }
                          
-                         if(ster==0)LED_Sterilizer_OnOff(0);
-                         else  LED_Sterilizer_OnOff(1);
+                         if(ster==0){ //0 -ON
+                            LED_Sterilizer_OnOff(0);
+                            PLASMA_SetHigh();
+                            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
+                         }
+                         else{ //1 -OFF
+                              LED_Sterilizer_OnOff(1);
+                              PLASMA_SetLow();
+                             HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic off
+                         }
                             
                               
-                         if(dry==0)LED_Dry_OnOff(0);
-                         else LED_Dry_OnOff(1);
+                         if(dry==0){
+                            LED_Dry_OnOff(0);
+                            if(run_t.gFan_flag==1)
+                                 PTC_SetHigh();
+                         }
+                         else{
+                            LED_Dry_OnOff(1);
+                            PTC_SetLow();
+                         }
                          
-                         if(ai==0)LED_AI_OnOff(0);
-                         else LED_AI_OnOff(1);
+                         if(ai==0){
+                            LED_AI_OnOff(0);
+                         }
+                         else{
+                             LED_AI_OnOff(1);
+                         }
                          //open PTC and FAN ,Ultrasonic 
-                         TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
-                         FAN_CCW_RUN();    //FAN ON 
-                         PLASMA_SetHigh() ; //sterilization ON
-                         PTC_SetHigh() ; //PTC ON   
-                         HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
-                    
-                   }
-                   if(run_t.gTimer_1s==1){//1s read one data
+                      
+                         if(fira !=0 || fird !=0){
+                             m = (run_t.gTimes_hours /10) %10;
+                             n=  (run_t.gTimes_hours %10);
+                             p= (run_t.gTimes_minutes /10) %10;
+                             q= run_t.gTimes_minutes %10;
+                             TM1640_Write_4Bit_Data(m,n,p,q,0) ;
+                         }
+                         else  
+                            TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
+                     
+                    }
+                   if(run_t.gTimer_key_2s==1){//1s read one data
                        Display_DHT11_Value(DHT11);
                        run_t.gTimer_1s =0;
                   }
@@ -246,23 +279,19 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                    run_t.gTimer_start =0;
                    if(fira == 0){
                       fira =1;
-                       n = 3;
+                        run_t.gTimes_hours = 13; // 11 hours
                    }
                    else{
-                      n ++;
+                     run_t.gTimes_hours++;
                        
                    }
-                   if(n ==10 && m< 3){
-                      n=0;
-                      m++;
+                   if(run_t.gTimes_hours >24){
+                      run_t.gTimes_hours=0;
                    }
-                  if(m==2){
-                    if(n> 4){
-                       m=0;
-                       n=0;
-                    }
+                 
                      
-                  }
+                m = (run_t.gTimes_hours /10) %10;
+                n=  (run_t.gTimes_hours %10);
                 TM1640_Write_4Bit_Data(0,0,m,n,1) ;
                 run_t.gTimer_start =1;                    
                 sig = START_SIG ;                  
@@ -280,22 +309,18 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                    run_t.gTimer_start =0;
                    if(fird == 0){
                       fird =1;
-                       n = 1;
+                      run_t.gTimes_hours = 11; // 11 hours
                    }
                    else{
-                      n --;
+                      run_t.gTimes_hours--;
                        
                    }
-                 if(n < 0 ){
-                      n=9;
-                      m--;
-                     if(m < 0 ){
-                        n=4;
-                        m=2;
-                      }
+                 if(run_t.gTimes_hours < 0 ){
+                     run_t.gTimes_hours=24; //hours
                        
                    }
-                 
+                 m = (run_t.gTimes_hours /10) %10;
+                 n=  (run_t.gTimes_hours %10);
                  TM1640_Write_4Bit_Data(0,0,m,n,1) ;  
                  run_t.gTimer_start =1;                   
                  sig = START_SIG ;    
@@ -307,15 +332,16 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                if(run_t.gKeyLong ==1 && (fira !=0 || fird !=0)){
                  if(run_t.gTimer_key_5s==1){
             
-                    run_t.gTime_hour = (m*10 + n)*3600;  
+                    run_t.gTime_total_hours = run_t.gTimes_hours * 3600;  
                      
-                    if(run_t.gTime_hour ==0)run_t.gTimer_Cmd =0;
-                    else run_t.gTimer_Cmd =1;
+                    if(run_t.gTimes_hours ==0)run_t.gTimer_Cmd =0; //don't timer times
+                    else run_t.gTimer_Cmd =1; //start timers times times 
                      
                     run_t.gKeyLongPressed =0;
                     run_t.gKeyLong=0;
                     fira=0;
                     fird =0;
+                    run_t.gTimer_key_5s=0;
                     //state transfer
                     me->state__=CODE;
                     sig =POWER_SIG;
@@ -326,10 +352,11 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                else{
                   if(run_t.gTimer_key_5s==1 && (run_t.gKeyLong ==1)){
                     run_t.gTimer_Cmd =1;
-                    run_t.gTime_hour = 12*3600; //hours
-                    
+                    run_t.gTime_total_hours = 12*3600; //hours
+                    run_t.gTimes_hours =12;
                     run_t.gKeyLongPressed =0;
                     run_t.gKeyLong=0;
+                    run_t.gTimer_key_5s=0;
                      //state transfer
                     me->state__=CODE;
                     sig =POWER_SIG;
@@ -337,6 +364,8 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
               }
                
              if(fira !=0 || fird !=0){ //blank SMG effect
+                 m = (run_t.gTimes_hours /10) %10;
+                 n=  (run_t.gTimes_hours %10);
                  TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
              }
              else{
@@ -388,7 +417,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
               
           break;
           
-          case STER_SIG:
+          case PLASMA_SIG:
               sterflag = sterflag ^ 0x01;
               if(sterflag==1){
                  ster =1;

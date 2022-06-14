@@ -8,7 +8,7 @@ void FAN_CCW_RUN(void)
   
 }
 
-void Motor_Stop(void)
+void FAN_Stop(void)
 {
     FAN_CCW_SetLow(); //brake
     FAN_CW_SetLow(); //brake
