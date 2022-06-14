@@ -11,7 +11,7 @@
 #define STERLED         (seg_g + seg_f)
 #define DRYLED          (seg_g + seg_f)
 #define AILED           (seg_g + seg_f)
-
+#define HOUR            (seg_b + seg_c + seg_e+ seg_f + seg_g)
 
 
 
@@ -96,7 +96,7 @@ static void TM1640_Write_OneByte(uint8_t data)
 *Return Ref: NO
     *
 ********************************************************************************************************/
-void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit)
+void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit,uint8_t sl)
 {
      TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
@@ -104,7 +104,11 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     
      TM1640_Start();
      TM1640_Write_OneByte(0xC0);//0xC0H->GRID1->BIT_1
-     TM1640_Write_OneByte(segNumber[onebit]);//display "1"
+     if(sl ==0)
+         TM1640_Write_OneByte(segNumber[onebit]);//display "1"
+     else{
+        TM1640_Write_OneByte(HOUR);//display "H"
+     }
      TM1640_Stop();
     
      TM1640_Start();

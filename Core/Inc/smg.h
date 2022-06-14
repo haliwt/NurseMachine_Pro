@@ -3,7 +3,7 @@
 #include "main.h"
 
 
-//IO·½ÏòÉèÖÃ
+//IOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define TM1640_DIN_IO_IN()    {GPIOB->MODER&=0XFCFFFFFF;GPIOB->MODER|=0<<24;}  //0x00 input mode
 #define TM1640_DIN_IO_OUT()   {GPIOB->MODER&=0XFCFFFFFF;GPIOB->MODER|=1<<24;}   //0x01 output  mode 
 
@@ -11,10 +11,10 @@
 #define TM1640_CLK    GPIO_PIN_11
 #define TM1640_GPIO   GPIOB 
 
-#define TM1640_CLK_SetHigh()            HAL_GPIO_WritePin(TM1640_GPIO,TM1640_CLK,GPIO_PIN_SET)    // Êä³ö¸ßµçÆ½
-#define TM1640_CLK_SetLow()             HAL_GPIO_WritePin(TM1640_GPIO,TM1640_CLK,GPIO_PIN_RESET)  // Êä³öµÍµçÆ½
+#define TM1640_CLK_SetHigh()            HAL_GPIO_WritePin(TM1640_GPIO,TM1640_CLK,GPIO_PIN_SET)    // ï¿½ï¿½ï¿½ï¿½ßµï¿½Æ½
+#define TM1640_CLK_SetLow()             HAL_GPIO_WritePin(TM1640_GPIO,TM1640_CLK,GPIO_PIN_RESET)  // ï¿½ï¿½ï¿½ï¿½Íµï¿½Æ½
 
-#define TM1640_DIN_SetHigh()            HAL_GPIO_WritePin(TM1640_GPIO,TM1640_DIN,GPIO_PIN_SET)    // Êä³ö¸ßµçÆ½
+#define TM1640_DIN_SetHigh()            HAL_GPIO_WritePin(TM1640_GPIO,TM1640_DIN,GPIO_PIN_SET)    // ï¿½ï¿½ï¿½ï¿½ßµï¿½Æ½
 #define TM1640_DIN_SetLow()             HAL_GPIO_WritePin(TM1640_GPIO,TM1640_DIN,GPIO_PIN_RESET)    // output low level
 
 
@@ -68,9 +68,11 @@
 
 
 
-void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit);
+void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit,uint8_t sl);
 void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit);
 void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
+
+
 
 void LED_Power_On(void);
 void LED_MODE_On(void);

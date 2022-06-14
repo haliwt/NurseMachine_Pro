@@ -41,6 +41,7 @@ void CProcessRun_Init(void)
 
 void CProcess_Run(void)
 {
+   
     run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
     while(run_t.gKeyValue !=0){
     
@@ -57,6 +58,8 @@ void CProcess_Run(void)
                  run_t.gSig = MODE_SIG;
                  cprocess.state__ =  RUN ;
                  cprocess.cmdCtr__ = 3;
+                 run_t.gKeyLongPressed++ ; //adjust long key be pressed numbers
+                 
              
              }
           
@@ -172,6 +175,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                      LED_Dry_On();
                      LED_AI_On();
                      //open PTC and FAN ,Ultrasonic 
+                     TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
                      FAN_CCW_RUN();    //FAN ON 
                      PLASMA_SetHigh() ; //sterilization ON
                      PTC_SetHigh() ; //PTC ON   
@@ -195,7 +199,14 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
       switch (sig) {
        
           case MODE_SIG:
-              
+           if(run_t.gKeyLongPressed > 300){  //Mode key be pressed long   
+                
+           } 
+           else{ //shot be pressed 
+             TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,1) ;  //display times  4bit //display times of timer "HXX"
+                
+           
+           }
             break;
           case ADD_SIG:
               
