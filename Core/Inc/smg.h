@@ -29,7 +29,7 @@
  
 
 #define OpenDispTM1640          0x8F//
-#define CloseDisTM1640		    0x80// 
+#define CloseDispTM1640		    0x80// 
 
  
  //Display Address 
@@ -74,7 +74,7 @@ void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
 void TM1640_TimeLed_OnOff(uint8_t sel);
 
 
-void LED_Power_On(void);
+void LED_Power_OnOff(uint8_t sel);
 void LED_MODE_On(void);
 void LED_TempHum_On(void);
 void LED_Fan_OnOff(uint8_t sel);
@@ -83,7 +83,7 @@ void LED_Dry_OnOff(uint8_t sel);
 void LED_AI_OnOff(uint8_t sel);
 
 void Breath_Led(void);
-
+void Smg_AllOff(void);
 
 #endif 
 

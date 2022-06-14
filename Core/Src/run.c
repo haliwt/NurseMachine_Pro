@@ -41,16 +41,25 @@ void CProcessRun_Init(void)
 
 void CProcess_Run(void)
 {
-   
+    static uint8_t powerflag;
     run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
     while(run_t.gKeyValue !=0){
     
        switch(ReceiveBuffer[1]){
        
          case 0x80: //CIN0 -> POWER KEY 
-             run_t.gSig = POWER_SIG ;
-             cprocess.state__ =  CODE ;
-             cprocess.cmdCtr__ = 1;
+             powerflag = powerflag ^ 0x01;
+             if(powerflag == 1){
+                run_t.gSig = POWER_SIG ;
+                cprocess.state__ =  CODE ;
+                cprocess.cmdCtr__ = 1;
+             }
+             else{
+                 Smg_AllOff();
+                 run_t.gSig = KEY_SIG ;
+                 cprocess.state__=IDLE; //state 
+                 run_t.gSig =KEY_SIG ;
+             }
          break;
          
          case 0x40: //CIN1 -> MODE KEY
@@ -151,7 +160,7 @@ void CProcess_Run(void)
 ************************************************************************/ 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
-   static uint8_t fira,fird,fan,dry,ster,ai;
+   static uint8_t fira,fird,fan,dry,ster,ai,po;
    static uint8_t fanflag,dryflag,sterflag,aiflag;
    static int8_t n,m,p,q;
     
@@ -159,9 +168,18 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
    case IDLE: //state 
      switch (sig) {
           case KEY_SIG:
-             //run_t.gTimer = 0 ;  //timer 500ms scan key value 
+             //run_t.gTimer = 0 ;  //timer 500ms scan key value
+            if(po==0){
+                po++;
+                Smg_AllOff();
+            }
+            if(run_t.gPower_Cmd==1){
+                 Smg_AllOff();
+                 run_t.gPower_Cmd++ ;
+            }
             run_t.gRun_flag = KEY_SIG;
-            
+            Breath_Led();
+          
             break;
           }
      break;
@@ -175,7 +193,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                      if(run_t.gTimer_500ms ==1){
                          run_t.gRun_flag = POWER_SIG;
                          run_t.gTimer_500ms = 0;
-                         LED_Power_On();
+                         LED_Power_OnOff(0);
                          LED_MODE_On();
                          LED_TempHum_On();
                          

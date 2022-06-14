@@ -1,6 +1,7 @@
 #include "smg.h"
 
 
+
 #define DOUBLEDOT       seg_h
 
 #define POWERLED        (seg_g + seg_f)
@@ -45,7 +46,13 @@ const unsigned char segNumber[]={
 static void TM1640_Start(void);
 static void TM1640_Stop(void);
 static void TM1640_Write_OneByte(uint8_t data);
-
+void Bdelay_us(uint16_t t);
+/*****************************************************
+ * 
+ * 
+ * 
+ * 
+******************************************************/
 static void TM1640_Start(void)
 {
    TM1640_DIN_SetHigh() ;
@@ -230,7 +237,7 @@ void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
 *Return Ref: NO
     *
 *****************************************************************************/
-void LED_Power_On(void)
+void LED_Power_OnOff(uint8_t sel)
 {
      
      TM1640_Start();
@@ -239,7 +246,10 @@ void LED_Power_On(void)
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCE);//0xC4H->GRID15
-     TM1640_Write_OneByte(POWERLED);//display "power Key"
+     if(sel==0)
+         TM1640_Write_OneByte(POWERLED);//display "power Key"
+     else 
+          TM1640_Write_OneByte(OFFLED);//display "NULL"
      TM1640_Stop();
 
     //open diplay 
@@ -403,13 +413,74 @@ void TM1640_TimeLed_OnOff(uint8_t sel)
 
 }
 
+
 /**
  * @brief 
  * 
  */
-void Breath_Led(void)
+void Bdelay_us(uint16_t t)
 {
-
+  //__IO uint32_t Delay = udelay * 72 / 8;//(SystemCoreClock / 8U / 1000000U)
+    //?stm32f1xx_hal_rcc.c -- static void RCC_Delay(uint32_t mdelay)
+  do
+  {
+    __NOP();
+    __NOP();
+    __NOP();
+    __NOP();
+    __NOP();
+  }
+  while (t --);
 
 }
+
+
+
+
+void Breath_Led(void)
+{
+    
+    static uint16_t t;
+    static uint8_t powerLed;
+    uint8_t i;
+    if(powerLed ==0){
+        for(i=0;i<10;i++){
+           LED_Power_OnOff(0); //POWER LED ON 
+           Bdelay_us(t) ;
+           LED_Power_OnOff(1); //POWER LED OFF
+           Bdelay_us(501-t)  ;
+        }
+     }
+     t++;
+     if(t==500){
+        powerLed = 1;
+     }
+
+     if(powerLed==1){
+         for(i=0;i<10;i++){
+           LED_Power_OnOff(0); //POWER LED ON 
+           Bdelay_us(t) ;
+           LED_Power_OnOff(1); //POWER LED OFF
+           Bdelay_us(501-t)  ;
+
+         }
+         t--;
+         if(t==1) powerLed =0;
+
+     }
+
+    
+}
+
+void Smg_AllOff(void)
+{
+    //close diplay
+    TM1640_Start();
+    TM1640_Write_OneByte(CloseDispTM1640);//
+    TM1640_Stop();
+
+}
+
+
+
 
