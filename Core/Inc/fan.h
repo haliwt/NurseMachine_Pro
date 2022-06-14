@@ -38,7 +38,7 @@
 void FAN_CCW_RUN(void);
 void FAN_Stop(void);
 
-
+void AI_Function_OnOff(uint8_t sel);
 
 
 

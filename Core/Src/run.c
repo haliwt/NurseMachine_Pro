@@ -204,22 +204,31 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                               
                          if(dry==0){
                             LED_Dry_OnOff(0);
-                            if(run_t.gFan_flag==1)
+                            if(run_t.gFan_flag==1) //fan open maybe open PTC ,
                                  PTC_SetHigh();
+                            else{
+                                PTC_SetLow();
+                            }
                          }
                          else{
                             LED_Dry_OnOff(1);
                             PTC_SetLow();
                          }
                          
-                         if(ai==0){
+                         if(ai==0){//ON
                             LED_AI_OnOff(0);
+                            AI_Function_OnOff(0);
                          }
-                         else{
+                         else{ //Off
                              LED_AI_OnOff(1);
+                             AI_Function_OnOff(1);
                          }
                          //open PTC and FAN ,Ultrasonic 
                       
+                     
+                    }
+                    if(run_t. gTimer_1s==1){
+                        run_t. gTimer_1s=0;
                          if(fira !=0 || fird !=0){
                              m = (run_t.gTimes_hours /10) %10;
                              n=  (run_t.gTimes_hours %10);
@@ -229,8 +238,9 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                          }
                          else  
                             TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
-                     
+
                     }
+
                    if(run_t.gTimer_key_2s==1){//1s read one data
                        Display_DHT11_Value(DHT11);
                        run_t.gTimer_1s =0;
@@ -375,7 +385,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
               
              if(run_t.gKeyLong==1){ //turn off Smg display 
                   
-                  if(run_t.gTimer_key_2s==1){
+                  if(run_t.gTimer_key_2s==1){ //turn off smg
                       run_t.gTimer_key_2s=0;
                       TM1640_Write_4Bit_Data(0,0,1,2,2) ; //turn off 4BIT smg
                   }
