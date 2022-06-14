@@ -120,7 +120,7 @@ void CProcess_Run(void)
          break;
          
          case 0x01: //CIN7 -> AI KEY
-               if(run_t.gRun_flag ==POWER_SIG){
+             if(run_t.gRun_flag ==POWER_SIG){
                   run_t.gSig = AI_SIG;
                    cprocess.state__ =  RUN ;
                    cprocess.cmdCtr__ = 17;
@@ -160,6 +160,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
      switch (sig) {
           case KEY_SIG:
              //run_t.gTimer = 0 ;  //timer 500ms scan key value 
+            run_t.gRun_flag = KEY_SIG;
             
             break;
           }
