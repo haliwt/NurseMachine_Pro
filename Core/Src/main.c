@@ -35,7 +35,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+DHT11_Data_TypeDef dht11;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -71,7 +71,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+    uint8_t keybuf[1];
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -107,14 +107,18 @@ int main(void)
     /* USER CODE END WHILE */
       
     /* USER CODE BEGIN 3 */
-     // run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
+      
+     Display_DHT11_Value(&dht11);
+      
+    //  run_t.gKeyValue = I2C_SimpleRead_From_Device(keybuf) ;
      // CProcess_Run();
-     TM1640_Write_4Bit_Data(5,6,7,8,0);
-     HAL_Delay(500);
-     TM1640_Write_2bit_TempData(5,6);
-     HAL_Delay(500);
-     TM1640_Write_2bit_HumData(7,8);
-     HAL_Delay(500);
+    
+       //    TM1640_Write_4Bit_Data(5,6,7,8,0);
+//     HAL_Delay(500);
+//     TM1640_Write_2bit_TempData(5,6);
+//     HAL_Delay(500);
+//     TM1640_Write_2bit_HumData(7,8);
+//     HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

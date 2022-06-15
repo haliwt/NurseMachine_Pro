@@ -14,6 +14,19 @@
 
 #define DHT11_ReadData()	            HAL_GPIO_ReadPin(DHT11_GPIO,DHT11_DATA)
 
+/* 宏定义 -------------------------------------------------------------------*/
+/***********************   DHT11 连接引脚定义  **************************/
+#define DHT11_Dout_GPIO_CLK_ENABLE()              __HAL_RCC_GPIOB_CLK_ENABLE()//__HAL_RCC_GPIOA_CLK_ENABLE()
+#define DHT11_Dout_PORT                           GPIOB//GPIOA
+#define DHT11_Dout_PIN                            GPIO_PIN_0
+
+/***********************   DHT11 函数宏定义  ****************************/
+#define DHT11_Dout_LOW()                          HAL_GPIO_WritePin(DHT11_Dout_PORT, DHT11_Dout_PIN, GPIO_PIN_RESET)
+#define DHT11_Dout_HIGH()                         HAL_GPIO_WritePin(DHT11_Dout_PORT, DHT11_Dout_PIN, GPIO_PIN_SET)
+#define DHT11_Data_IN()	                          HAL_GPIO_ReadPin(DHT11_Dout_PORT,DHT11_Dout_PIN)
+
+
+
 /* 类型定义 ------------------------------------------------------------------*/
 /************************ DHT11 数据类型定义******************************/
 typedef struct
