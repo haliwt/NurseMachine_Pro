@@ -109,13 +109,11 @@ int main(void)
     /* USER CODE END WHILE */
       
     /* USER CODE BEGIN 3 */
-     //if(run_t.gTimer_key_2s==1){
-       //  run_t.gTimer_key_2s=0;
-       //  Display_DHT11_Value(&dht11);
-    // }
-      
-      I2C_Read_From_Device(SC12B_ADDR,0x08,keybuf,1);
-     //I2C_Read_From_Device(0x08,keybuf);
+     if(run_t.gTimer_key_2s==1){
+         run_t.gTimer_key_2s=0;
+         Display_DHT11_Value(&dht11);
+     }
+     I2C_Read_From_Device(SC12B_ADDR,0x08,keybuf,1);
      // CProcess_Run();
       m= keybuf[0]/100%10;
       n= keybuf[0]/10%10;

@@ -39,12 +39,7 @@ static void Delay_I2C(uint8_t t)
        for(int i = 0; i < 50; i++)//better for(int i = 0; i < 40; i++)    //for(int i = 0; i < 20; i++)    
         {
             __asm("NOP");//等待1个指令周期，系统主频16M
-           // __asm("NOP");//等待1个指令周期，系统主频16M
-          // __asm("NOP");//等待1个指令周期，系统主频16M
-          // __asm("NOP");//等待1个指令周期，系统主频16M
-          //  __asm("NOP");//等待1个指令周期，系统主频16M
-          // __asm("NOP");//等待1个指令周期，系统主频16M
-            
+
         }
 	}
 }
