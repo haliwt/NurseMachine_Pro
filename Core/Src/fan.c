@@ -32,3 +32,15 @@ void AI_Function_OnOff(uint8_t sel)
     }
 }
 
+void Buzzer_On(void)
+{
+  uint8_t i;
+  for(i=0;i<30;i++){
+        BUZZER_SetHigh();
+        HAL_Delay(1);
+        BUZZER_SetLow() ;
+        HAL_Delay(1);
+  }
+
+}
+
