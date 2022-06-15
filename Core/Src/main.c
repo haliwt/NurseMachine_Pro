@@ -120,7 +120,7 @@ int main(void)
       m= keybuf[0]/100%10;
       n= keybuf[0]/10%10;
       p=keybuf[0]%10;
-           TM1640_Write_4Bit_Data(m,n,p,0,0);
+      TM1640_Write_4Bit_Data(m,n,p,0,0);
 //     HAL_Delay(500);
 //     TM1640_Write_2bit_TempData(5,6);
 //     HAL_Delay(500);
