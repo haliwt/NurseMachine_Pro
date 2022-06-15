@@ -30,7 +30,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+  uint8_t keybuf[1];
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,7 +71,8 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-    uint8_t keybuf[1];
+  
+    uint8_t m,n,p;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,7 +100,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
    CProcessRun_Init();
   /* USER CODE END 2 */
-
+  //  HAL_TIM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_Base_Start_IT(&htim3);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -107,13 +109,18 @@ int main(void)
     /* USER CODE END WHILE */
       
     /* USER CODE BEGIN 3 */
+     //if(run_t.gTimer_key_2s==1){
+       //  run_t.gTimer_key_2s=0;
+       //  Display_DHT11_Value(&dht11);
+    // }
       
-     Display_DHT11_Value(&dht11);
-      
-    //  run_t.gKeyValue = I2C_SimpleRead_From_Device(keybuf) ;
+      I2C_Read_From_Device(SC12B_ADDR,0x08,keybuf,1);
+     //I2C_Read_From_Device(0x08,keybuf);
      // CProcess_Run();
-    
-       //    TM1640_Write_4Bit_Data(5,6,7,8,0);
+      m= keybuf[0]/100%10;
+      n= keybuf[0]/10%10;
+      p=keybuf[0]%10;
+           TM1640_Write_4Bit_Data(m,n,p,0,0);
 //     HAL_Delay(500);
 //     TM1640_Write_2bit_TempData(5,6);
 //     HAL_Delay(500);

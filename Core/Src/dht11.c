@@ -128,7 +128,7 @@ uint8_t DHT11_Read_TempAndHumidity(DHT11_Data_TypeDef *DHT11_Data)
 
 	/*主机设为输入 判断从机响应信号*/ 
 	DHT11_Mode_IPU();
-delay_us(30);   //延时30us
+  delay_us(40);   //延时30us
 	/*判断从机是否有低电平响应信号 如不响应则跳出，响应则向下运行*/   
 	if(DHT11_Data_IN()==Bit_RESET)     
 	{
