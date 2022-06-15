@@ -44,7 +44,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+   
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -105,9 +105,16 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+      
     /* USER CODE BEGIN 3 */
-      CProcess_Run();
+     // run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
+     // CProcess_Run();
+     TM1640_Write_4Bit_Data(5,6,7,8,0);
+     HAL_Delay(500);
+     TM1640_Write_2bit_TempData(5,6);
+     HAL_Delay(500);
+     TM1640_Write_2bit_HumData(7,8);
+     HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

@@ -28,7 +28,7 @@
 #define AddrFixed 	       0x44// 
  
 
-#define OpenDispTM1640          0x8F//
+#define OpenDispTM1640          0x88//
 #define CloseDispTM1640		    0x80// 
 
  

@@ -10,8 +10,8 @@
 static void CProcessDispatch(CProcess1 *me, uint8_t sig) ;
 
 DHT11_Data_TypeDef *DHT11;
+uint8_t ReceiveBuffer[1];
 
-uint8_t ReceiveBuffer[1]={0};
 static CProcess1 cprocess;
 RUN_T run_t; 
 #if 0
@@ -38,11 +38,11 @@ void CProcessRun_Init(void)
 }
 
 
-
+ 
 void CProcess_Run(void)
 {
     static uint8_t powerflag;
-    run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
+   // run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
     while(run_t.gKeyValue !=0){
     
        switch(ReceiveBuffer[1]){

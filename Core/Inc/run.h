@@ -40,7 +40,7 @@ typedef struct _RUN_T{
 }RUN_T;
 
 #define CProcessInit(me_) ((me_)->cmdCtr__ =0,(me_)->state__ = IDLE)
-
+extern uint8_t ReceiveBuffer[1];
 extern RUN_T run_t; 
 
 void CProcessRun_Init(void);

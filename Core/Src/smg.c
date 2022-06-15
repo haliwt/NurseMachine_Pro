@@ -85,11 +85,11 @@ static void TM1640_Write_OneByte(uint8_t data)
 	TM1640_CLK_SetLow();
 	 if(data & 0x01){
 	     TM1640_DIN_SetHigh();
-		   HAL_Delay(5); //5ms
+		   HAL_Delay(1); //5ms
 	 }
 	 else{
 	     TM1640_DIN_SetLow();
-		   HAL_Delay(5); //5ms
+		   HAL_Delay(1); //5ms
 	 
 	 }
 	 TM1640_CLK_SetHigh();
@@ -125,8 +125,10 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     
      TM1640_Start();
      TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
-     if(sl==0)
-          TM1640_Write_OneByte(segNumber[twobit]);//display "2"
+     if(sl==0){
+         TM1640_Write_OneByte(segNumber[twobit]|DOUBLEDOT);//display "2 :"
+         // TM1640_Write_OneByte(DOUBLEDOT);//display ":"
+     }
      else if(sl ==1){
           TM1640_Write_OneByte(segNumber[0]);//display "0"  
       }
@@ -136,11 +138,11 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
      TM1640_Stop();
     
     //diplay ":"
-    TM1640_Start();
-    TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
-    if(sl == 2) TM1640_Write_OneByte(OFFLED);//display "NULL"
-    else TM1640_Write_OneByte(DOUBLEDOT);//display ":"
-    TM1640_Stop();
+   // TM1640_Start();
+  //  TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
+  //  if(sl == 2) TM1640_Write_OneByte(OFFLED);//display "NULL"
+  //  else TM1640_Write_OneByte(DOUBLEDOT);//display ":"
+  //  TM1640_Stop();
     
     //minute 
     TM1640_Start();
@@ -158,7 +160,7 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//0xC2H->GRID3->BIT_3
+    TM1640_Write_OneByte(OpenDispTM1640|0x8f);//0xC2H->GRID3->BIT_3
     TM1640_Stop();
     
     
@@ -192,7 +194,7 @@ void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit)
      //open diplay
    
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x8f);//
     TM1640_Stop();
     
 
@@ -224,7 +226,7 @@ void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
     
      //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x8f);//
     TM1640_Stop();
     
 }
