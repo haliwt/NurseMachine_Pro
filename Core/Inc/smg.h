@@ -57,14 +57,14 @@
 #define Set14_16TM1640 		    0X8F//??????? 14/16 
 
     
-#define   seg_a  0x01      //SEG1   //seg_e = 0x10  
-#define   seg_b  0x02      //SEG2 , //seg_f = 0x20
-#define   seg_c  0x04      //SEG3 , //seg_g = 0x40
-#define   seg_d  0x08      //SEG4 , //seg_d = 0x08
-#define   seg_e  0x10      //SEG5 , //seg_c = 0x04
-#define   seg_f  0x20      //SEG6   //seg_a = 0x01
-#define   seg_g  0x40      //SEG7   //seg_b = 0x02 
-#define   seg_h  0x80      //SEG8 -> ":"
+#define   seg_a  0x01      //SEG0   //seg_e = 0x10  
+#define   seg_b  0x02      //SEG1 , //seg_f = 0x20
+#define   seg_c  0x04      //SEG2 , //seg_g = 0x40
+#define   seg_d  0x08      //SEG3 , //seg_d = 0x08
+#define   seg_e  0x10      //SEG4 , //seg_c = 0x04
+#define   seg_f  0x20      //SEG5   //seg_a = 0x01
+#define   seg_g  0x40      //SEG6   //seg_b = 0x02 
+#define   seg_h  0x80      //SEG7 -> ":"
 
 
 

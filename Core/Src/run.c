@@ -249,7 +249,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                          //open PTC and FAN ,Ultrasonic 
                       
                      
-                   // }
+                   }
                     if(run_t. gTimer_1s==1){
                         run_t. gTimer_1s=0;
                          if(fira !=0 || fird !=0){
@@ -494,7 +494,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
    }
 }
 
-}
+
 
 
 

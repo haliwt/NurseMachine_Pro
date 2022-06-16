@@ -5,17 +5,21 @@
 
 #define DOUBLEDOT       seg_h
 
-#define POWERLED        (seg_g + seg_f)
-#define MODELED         (seg_b+seg_c+seg_d+seg_e+seg_f)
+#define POWER_KEYLED    (seg_g + seg_h)
 
-#define TEMPLED         (seg_g + seg_f+ seg_e)
-#define FANLED          (seg_g + seg_f)
-#define STERLED         (seg_g + seg_f)
-#define DRYLED          (seg_g + seg_f)
-#define AILED           (seg_g + seg_f)
-#define HOUR            (seg_b + seg_c + seg_e+ seg_f + seg_g)
+#define POWERLED        (seg_g)
+#define MODELED         (seg_c+seg_d+seg_e+seg_f+seg_g+seg_h)
 
-#define TIMELED         (seg_e)
+#define TEMPLED         (seg_f+ seg_g +seg_h)  //temperature and humidity 
+#define FANLED          (seg_g + seg_h)
+#define STERLED         (seg_g + seg_h)
+#define DRYLED          (seg_g + seg_h)
+#define AILED           (seg_g + seg_h)
+
+#define TIMELED        (seg_f)
+
+#define HOUR            (seg_b + seg_c +seg_e+seg_f +seg_g)  //"H"
+
 #define OFFLED           0
 
 
@@ -274,8 +278,9 @@ void KeyLed_Power_On(void)
      TM1640_Stop();
 
     //open diplay 
+    
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640|0x8F);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x8c);//
     TM1640_Stop();
 }
 
