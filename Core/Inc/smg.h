@@ -71,15 +71,10 @@
 void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit,uint8_t sl);
 void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit);
 void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
-void TM1640_TimeLed_OnOff(uint8_t sel);
 
 
-void LED_MODE_On(void);
-void LED_TempHum_On(void);
-void LED_Fan_OnOff(uint8_t sel);
-void LED_Sterilizer_OnOff(uint8_t sel);
-void LED_Dry_OnOff(uint8_t sel);
-void LED_AI_OnOff(uint8_t sel);
+
+
 
 void KeyLed_Power_On(void);
 

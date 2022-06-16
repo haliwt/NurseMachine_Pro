@@ -97,7 +97,7 @@ int main(void)
   MX_TIM14_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-   CProcessRun_Init();
+
   /* USER CODE END 2 */
   //  HAL_TIM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
