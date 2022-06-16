@@ -68,8 +68,8 @@ void RunCommand_Mode(uint8_t sig)
 
 	         if(run_t.gPower_On !=1){
                   
-                  run_t.gRun_flag= POWER_SIG ;
-				 run_t.gPower_On =0;
+                  run_t.gRun_flag= IDEL_SIG ;
+
 
 			 }
 
@@ -95,15 +95,13 @@ void RunCommand_Mode(uint8_t sig)
               if(keyMode ==0){
 			  	  keyMode ++;
 			      run_t.gTimer_key_2s=0;
-			      run_t.gTimer_5s_start =1;
               }
            
 	           
-           if(run_t.gTimer_key_2s >0){  //Mode key be pressed long 
-                run_t.gKeyLongPressed =0;
+           if(run_t.gTimer_key_2s >1){  //Mode key be pressed long 
                run_t.gKeyLong =1;
-               run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
-            
+              // run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
+                 run_t.gTimer_key_5s=0;
                 run_t.gKeyValue++ ;
 			   keyMode=0;
 			   run_t.gTimer_key_2s=0;
@@ -127,13 +125,13 @@ void RunCommand_Mode(uint8_t sig)
 					 keyMode=0;
 				 if( run_t.gKeyLong ==1){
 
-					 run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
-					run_t.gKey_long_flag=1;
+					 run_t.gTimer_key_5s=0;// run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
+					
 					run_t.gTimes_hours++;
 				    if(run_t.gTimes_hours >24){
 						run_t.gTimes_hours=0;
 					}
-                    run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
+                    run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
 				 }
 				 else{
 
@@ -160,13 +158,13 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 			 	 keyMode=0;
 			 	  if( run_t.gKeyLong ==1){
-                     run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
-                    run_t.gKey_long_flag=1;
+                      run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
+              
 					run_t.gTimes_hours--;
 				    if(run_t.gTimes_hours <0){
 						run_t.gTimes_hours=24;
 					}
-					run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
+					 run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
 
 				 }
 				 else{
@@ -288,6 +286,7 @@ void RunCommand_Order(void)
 	  	 	}
          
            Breath_Led();
+		   run_t.gKeyLong = 0;
           run_t.gKeyValue++;
 
 
@@ -298,7 +297,7 @@ void RunCommand_Order(void)
 		 run_t.gKeyValue++;
 		
 		if(run_t.gTimer_500ms ==1){
-			run_t.gRun_flag = POWER_SIG;
+		
 			run_t.gTimer_500ms = 0;
 			KeyLed_Power_On();
 			Display_Function_OnOff();
@@ -355,18 +354,14 @@ void RunCommand_Order(void)
 				m = (run_t.gTimes_hours /10) %10;
 				n=  (run_t.gTimes_hours %10);
 				TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-				if(run_t.gTimer_1s==1){
-					run_t.gTimer_1s=0;
+				if(run_t.gTimer_400ms==1){
+					run_t.gTimer_400ms=0;
 
 					 TM1640_Write_4Bit_Data(0,0,m,n,2) ; //timer is default 12 hours "H0:12"
 
 				}
 				TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
-				if(run_t.gTimer_key_5s==1){
-                     run_t.gTimer_key_5s=0;
-                     run_t.gKeyLong =1;
-					 
-				}
+				
 
 		     }
 		   else{ 
@@ -401,6 +396,11 @@ void RunCommand_Order(void)
 		if(run_t.gTimer_key_2s==1){//1s read one data
 			run_t.gTimer_1s =0;
 			Display_DHT11_Value(&DHT11);
+		}
+		if(run_t.gTimer_key_5s >10){
+              run_t.gTimer_key_5s=11;
+              run_t.gKeyLong =0;
+					 
 		}
 
 		
