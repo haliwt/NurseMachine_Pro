@@ -4,7 +4,7 @@
 
 
 enum Signal {                   /* enumeration for CProcess signals */
-   KEY_SIG,POWER_SIG,RUN_SIG,START_SIG,MODE_SIG,ADD_SIG,DEC_SIG,FAN_SIG,PLASMA_SIG,DRY_SIG,AI_SIG
+    KEY_SIG,POWER_SIG,RUN_SIG,START_SIG,MODE_SIG,ADD_SIG,DEC_SIG,FAN_SIG,PLASMA_SIG,DRY_SIG,AI_SIG,IDEL_SIG
 };
 
 enum State {                     /* enumeration for CProcess states */
@@ -27,19 +27,22 @@ typedef struct _RUN_T{
    uint8_t gRun_flag;
    uint8_t gAdd_flag;
    uint8_t gDec_flag;
-   uint8_t gTimer_flag;
+   uint8_t gKey_long_flag;
    uint8_t gTimes_hours_temp;
    uint8_t gTimer_10ms;
-    uint8_t gTimer_200ms;
-   uint8_t gTimer_500ms;
-   uint8_t gTimer_1s;
-   uint8_t gTimer_key_2s;
-   uint8_t gKeyLong;
+   uint8_t gTimer_200ms;
+   uint8_t  gTimer_500ms;
+   uint8_t  gTimer_1s;
+   uint8_t  gTimer_key_2s;
+   uint8_t  gKeyLong;
    uint8_t  gTimer_4s;
-   uint8_t gTimer_key_5s;
+   uint8_t  gTimer_key_5s;
    uint8_t  gTimer_5s_start;
    uint8_t  gTimer_Cmd;
-   uint8_t  gFan_flag;
+   uint8_t  gFan;
+   uint8_t  gPlasma;
+   uint8_t  gDry;
+   uint8_t  gAi;
    int8_t   gTimes_minutes;
    int8_t   gTimes_hours;
    uint16_t gTime_total_hours;
@@ -51,8 +54,10 @@ typedef struct _RUN_T{
 extern uint8_t ReceiveBuffer[1];
 extern RUN_T run_t; 
 
-void CProcessRun_Init(void);
-void CProcess_Run(void);
+//void CProcessRun_Init(void);
+//void CProcess_Run(void);
+void RunCommand_Mode(uint8_t sig);
+void RunCommand_Order(void);
 
 
 

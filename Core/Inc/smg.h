@@ -84,6 +84,9 @@ void LED_AI_OnOff(uint8_t sel);
 void KeyLed_Power_On(void);
 
 
+void Display_Function_OnOff(void);
+
+
 void Breath_Led(void);
 void Smg_AllOff(void);
 

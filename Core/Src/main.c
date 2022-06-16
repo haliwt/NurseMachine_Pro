@@ -108,12 +108,11 @@ int main(void)
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
         
-      if(run_t.gTimer_10ms ==1){
-      	 run_t.gTimer_10ms = 0;
-         I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,1);
-      }
-       CProcess_Run();
-	
+      
+       I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,1);
+      
+	   RunCommand_Mode(ReceiveBuffer[0]);
+	   RunCommand_Order();
     
   }
   /* USER CODE END 3 */

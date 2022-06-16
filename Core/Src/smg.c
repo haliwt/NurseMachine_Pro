@@ -1,4 +1,5 @@
 #include "smg.h"
+#include "run.h"
 
 
 
@@ -521,5 +522,61 @@ void Smg_AllOff(void)
 }
 
 
+void Display_Function_OnOff(void)
+{
+     TM1640_Start();
+     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
+     TM1640_Stop();
+    
+   
+
+     TM1640_Start();
+     TM1640_Write_OneByte(0xCA);//0xCAH->GRID11
+     if(run_t.gAi==0)
+           TM1640_Write_OneByte(AILED);//display "temperature led"
+     else{
+        TM1640_Write_OneByte(OFFLED);//display "NULL"
+     }
+     TM1640_Stop();
+
+
+
+	 TM1640_Start();
+     TM1640_Write_OneByte(0xCB);//0xCBH->GRID12
+     if(run_t.gDry==0)
+        TM1640_Write_OneByte(DRYLED);//display "temperature led"
+     else 
+        TM1640_Write_OneByte(OFFLED);//display "temperature led"
+     TM1640_Stop();
+
+
+
+
+
+	 TM1640_Start();
+     TM1640_Write_OneByte(0xCC);//0xCCH->GRID13
+     if(run_t.gPlasma==0)
+       TM1640_Write_OneByte(STERLED);//display "temperature led"
+     else 
+        TM1640_Write_OneByte(OFFLED);//display "NULL"
+     TM1640_Stop();
+
+	 TM1640_Start();
+     TM1640_Write_OneByte(0xCD);//0xCDH->GRID14
+     if(run_t.gFan==0)
+        TM1640_Write_OneByte(FANLED);//display "FAN led"
+     else
+        TM1640_Write_OneByte(OFFLED);//display "FAN led"
+     TM1640_Stop();
+
+     //open diplay
+ 
+    TM1640_Start();
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
+    TM1640_Stop();
+
+
+
+}
 
 
