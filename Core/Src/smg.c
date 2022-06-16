@@ -2,6 +2,7 @@
 
 
 
+
 #define DOUBLEDOT       seg_h
 
 #define POWERLED        (seg_g + seg_f)
@@ -256,9 +257,28 @@ void LED_Power_OnOff(uint8_t sel)
 
     //open diplay 
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x80);//
     TM1640_Stop();
 }
+
+void KeyLed_Power_On(void)
+{
+     
+     TM1640_Start();
+     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
+     TM1640_Stop();
+    
+     TM1640_Start();
+     TM1640_Write_OneByte(0xCE);//0xC4H->GRID15
+     TM1640_Write_OneByte(POWERLED);//display "power Key"
+     TM1640_Stop();
+
+    //open diplay 
+    TM1640_Start();
+    TM1640_Write_OneByte(OpenDispTM1640|0x8F);//
+    TM1640_Stop();
+}
+
 /***************************************************************
 *
 *Function Name: void LED_TempHum(void)
@@ -280,7 +300,7 @@ void LED_TempHum_On(void)
 
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
     TM1640_Stop();
 
 
@@ -300,11 +320,8 @@ void LED_MODE_On(void)
 
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x8F);//
     TM1640_Stop();
-
-
-
 }
 
 void LED_Fan_OnOff(uint8_t sel)
@@ -324,7 +341,7 @@ void LED_Fan_OnOff(uint8_t sel)
     //open diplay
  
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
     TM1640_Stop();
 
 
@@ -346,7 +363,7 @@ void LED_Sterilizer_OnOff(uint8_t sel)
 
     //open diplay
    TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
     TM1640_Stop();
 }
 void LED_Dry_OnOff(uint8_t sel)
@@ -365,7 +382,7 @@ void LED_Dry_OnOff(uint8_t sel)
 
     //open diplay
    TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
     TM1640_Stop();
 
 
@@ -387,7 +404,7 @@ void LED_AI_OnOff(uint8_t sel)
 
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
     TM1640_Stop();
 
 
@@ -410,7 +427,7 @@ void TM1640_TimeLed_OnOff(uint8_t sel)
 
     //open diplay
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0X8F);//
     TM1640_Stop();
 
 }
@@ -424,15 +441,16 @@ void Bdelay_us(uint16_t t)
 {
   //__IO uint32_t Delay = udelay * 72 / 8;//(SystemCoreClock / 8U / 1000000U)
     //?stm32f1xx_hal_rcc.c -- static void RCC_Delay(uint32_t mdelay)
-  do
-  {
-    __NOP();
-    __NOP();
-    __NOP();
-    __NOP();
-    __NOP();
-  }
-  while (t --);
+    uint16_t j;
+	for(j=0;j<t;j++)
+	{
+       for(int i = 0; i < 50; i++)//better for(int i = 0; i < 40; i++)    //for(int i = 0; i < 20; i++)    
+        {
+            __asm("NOP");//等待1个指令周期，系统主频16M
+            __asm("NOP");//等待1个指令周期，系统主频16M
+            __asm("NOP");//等待1个指令周期，系统主频16M
+        }
+	}
 
 }
 
@@ -442,35 +460,113 @@ void Bdelay_us(uint16_t t)
 void Breath_Led(void)
 {
     
-    static uint16_t t;
-    static uint8_t powerLed;
-    uint8_t i;
+    LED_Power_OnOff(0);
+    #if 0
     if(powerLed ==0){
         for(i=0;i<10;i++){
-           LED_Power_OnOff(0); //POWER LED ON 
-           Bdelay_us(t) ;
-           LED_Power_OnOff(1); //POWER LED OFF
-           Bdelay_us(501-t)  ;
+            LED_Power_OnOff(0); //POWER LED ON 
+            //open diplay 
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
+            TM1640_Stop();
+            Bdelay_us(t);
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
+            TM1640_Stop();
+             Bdelay_us(t);
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
+            TM1640_Stop();
+             Bdelay_us(t);
+
+              //open diplay 
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
+            TM1640_Stop();
+            Bdelay_us(30001-t)  ;
+  
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
+            TM1640_Stop();
+             Bdelay_us(30001-t)  ;
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
+            TM1640_Stop();
+             Bdelay_us(30001-t)  ;
+
+
+             TM1640_Start();
+             TM1640_Write_OneByte(CloseDispTM1640);//
+             TM1640_Stop();
+            Bdelay_us(30001-t)  ;
         }
      }
      t++;
-     if(t==500){
+     if(t==30000){
         powerLed = 1;
      }
 
      if(powerLed==1){
-         for(i=0;i<10;i++){
-           LED_Power_OnOff(0); //POWER LED ON 
-           Bdelay_us(t) ;
-           LED_Power_OnOff(1); //POWER LED OFF
-           Bdelay_us(501-t)  ;
+         for(i=0;i<40;i++){
+           // LED_Power_OnOff(0); //POWER LED ON 
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
+            TM1640_Stop();
+            Bdelay_us(t);
+
+              TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
+            TM1640_Stop();
+             Bdelay_us(t);
+
+              TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
+            TM1640_Stop();
+            Bdelay_us(t);
+
+            Bdelay_us(t);
+            TM1640_Start();
+            TM1640_Write_OneByte(CloseDispTM1640);//
+            TM1640_Stop();
+            Bdelay_us(t) ;
+           //LED_Power_OnOff(1); //POWER LED OFF
+
+             Bdelay_us(t);
+            TM1640_Start();
+            TM1640_Write_OneByte(CloseDispTM1640);//
+            TM1640_Stop();
+           Bdelay_us(30001-t)  ;
+
+             TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
+            TM1640_Stop();
+            Bdelay_us(30001-t)  ;
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
+            TM1640_Stop();
+             Bdelay_us(30001-t)  ;
+
+            TM1640_Start();
+            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
+            TM1640_Stop();
+            
+
+
+
+           Bdelay_us(30001-t)  ;
 
          }
          t--;
          if(t==1) powerLed =0;
 
      }
-
+    #endif 
     
 }
 

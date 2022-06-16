@@ -9,7 +9,7 @@
 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig) ;
 
-DHT11_Data_TypeDef *DHT11;
+DHT11_Data_TypeDef DHT11;
 uint8_t ReceiveBuffer[1];
 
 static CProcess1 cprocess;
@@ -41,12 +41,15 @@ void CProcessRun_Init(void)
  
 void CProcess_Run(void)
 {
-    static uint8_t powerflag;
+    static uint8_t powerflag ,beepflag=0xff;
    // run_t.gKeyValue = I2C_SimpleRead_From_Device(ReceiveBuffer) ;
-    while(run_t.gKeyValue !=0){
-    
-       switch(ReceiveBuffer[1]){
-       
+    if(ReceiveBuffer[0] !=0 && ReceiveBuffer[0] !=0xff){
+		 if(beepflag !=run_t.gKeyValue){
+		 	beepflag = run_t.gKeyValue ;
+            Buzzer_On();
+			
+		 }
+       switch(ReceiveBuffer[0]){
          case 0x80: //CIN0 -> POWER KEY 
              powerflag = powerflag ^ 0x01;
              if(powerflag == 1){
@@ -179,7 +182,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
             }
             run_t.gRun_flag = KEY_SIG;
             Breath_Led();
-          
+            run_t.gKeyValue++ ;
             break;
           }
      break;
@@ -190,10 +193,11 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                 switch(run_t.gPower_Cmd){
                 
                     case 0:
+				
                      if(run_t.gTimer_500ms ==1){
                          run_t.gRun_flag = POWER_SIG;
                          run_t.gTimer_500ms = 0;
-                         LED_Power_OnOff(0);
+                         KeyLed_Power_On();
                          LED_MODE_On();
                          LED_TempHum_On();
                          
@@ -245,7 +249,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                          //open PTC and FAN ,Ultrasonic 
                       
                      
-                    }
+                   // }
                     if(run_t. gTimer_1s==1){
                         run_t. gTimer_1s=0;
                          if(fira !=0 || fird !=0){
@@ -261,15 +265,19 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                     }
 
                    if(run_t.gTimer_key_2s==1){//1s read one data
-                       Display_DHT11_Value(DHT11);
                        run_t.gTimer_1s =0;
+                       Display_DHT11_Value(&DHT11);
+					   
+                    
                   }
+				   run_t.gKeyValue++ ;
                  break;
                   
-                    case 1:
+                  case 1:
                          me->state__=IDLE;
                          sig =KEY_SIG ;
-                    break;
+				  run_t.gKeyValue++ ;
+                   break;
              }
            break;
                  
@@ -302,6 +310,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                run_t.gKeyLongPressed=0;
            
            }
+		    run_t.gKeyValue++ ;
             break;
           case ADD_SIG:
              if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
@@ -330,7 +339,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
           
              
              }
-              
+              run_t.gKeyValue++ ; 
           break; 
              
           case DEC_SIG:
@@ -354,7 +363,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                  run_t.gTimer_start =1;                   
                  sig = START_SIG ;    
              }
-              
+               run_t.gKeyValue++ ;
           break;
              
            case START_SIG:
@@ -410,7 +419,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                   }
              
              }
-               
+              run_t.gKeyValue++ ;  
           break;
              
              
@@ -428,7 +437,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
               //state transfer
              me->state__=CODE;
              sig =POWER_SIG;
-              
+              run_t.gKeyValue++ ;
               
           break;
           
@@ -443,6 +452,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
               //state transfer
              me->state__=CODE;
              sig =POWER_SIG;
+			  run_t.gKeyValue++ ;
               
           break;
           
@@ -458,7 +468,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
              //state transfer
              me->state__=CODE;
              sig =POWER_SIG;
-              
+             run_t.gKeyValue++ ;
           break;
           
           case AI_SIG:
@@ -475,7 +485,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
             //state transfer
              me->state__=CODE;
              sig =POWER_SIG;
-              
+             run_t.gKeyValue++ ;
           break;
           
       }
@@ -484,7 +494,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
    }
 }
 
-
+}
 
 
 

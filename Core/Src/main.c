@@ -73,7 +73,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   
-    uint8_t m,n,p,keyvalue;
+    uint8_t m,n,p;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -108,13 +108,19 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-      
+        
+      if(run_t.gTimer_10ms ==1){
+      	 run_t.gTimer_10ms = 0;
+         I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,1);
+      }
+       CProcess_Run();
     /* USER CODE BEGIN 3 */
+    #if 0
      if(run_t.gTimer_key_2s==1){
          run_t.gTimer_key_2s=0;
          Display_DHT11_Value(&dht11);
      }
-     keyvalue =I2C_Read_From_Device(SC12B_ADDR,0x08,keybuf,1);
+     I2C_Read_From_Device(SC12B_ADDR,0x08,keybuf,1);
      // CProcess_Run();
       if(keybuf[0]!=0){
         Buzzer_On();
@@ -123,7 +129,7 @@ int main(void)
       n= keybuf[0]/10%10;
       p=keybuf[0]%10;
       TM1640_Write_4Bit_Data(m,n,p,0,0);
-
+    #endif 
   }
   /* USER CODE END 3 */
 }

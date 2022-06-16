@@ -24,6 +24,7 @@ typedef struct _RUN_T{
    uint8_t gKeyValue;   
    uint8_t gSig;
    uint8_t gRun_flag;
+   uint8_t gTimer_10ms;
    uint8_t gTimer_500ms;
    uint8_t gTimer_1s;
    uint8_t gTimer_key_2s;
