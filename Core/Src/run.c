@@ -52,7 +52,7 @@ void CProcessRun_Init(void)
 **********************************************************************/
 void RunCommand_Mode(uint8_t sig)
 {
-     static uint8_t powerflag ,beepflag=0xff,dispt=0,longtimes,keyMode=0xff;
+     static uint8_t powerflag ,beepflag=0xff,keyMode;
 	 static uint8_t fanflag,plasmaflag,dryflag,aiflag;
 
     if(sig!=0){
@@ -92,24 +92,29 @@ void RunCommand_Mode(uint8_t sig)
          case 0x40: //CIN1 -> MODE KEY
              if(run_t.gPower_On ==1){
 			 	 
-              if(longtimes != keyMode ){
-		   	       longtimes = keyMode;
-                   run_t.gKeyLongPressed ++;  //long be pressed counter numbers
-	           }
-           if(run_t.gKeyLongPressed > 50){  //Mode key be pressed long 
+              if(keyMode ==0){
+			  	  keyMode ++;
+			      run_t.gTimer_key_2s=0;
+			      run_t.gTimer_5s_start =1;
+              }
+           
+	           
+           if(run_t.gTimer_key_2s >0){  //Mode key be pressed long 
                 run_t.gKeyLongPressed =0;
                run_t.gKeyLong =1;
                run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
             
                 run_t.gKeyValue++ ;
+			   keyMode=0;
+			   run_t.gTimer_key_2s=0;
 			   run_t.gRun_flag= RUN_SIG ;
            } 
-           else if(run_t.gKeyLong ==0){ //shot be pressed 
+           else if(run_t.gKeyLong ==0 && sig != 0x40){ //shot be pressed 
+                
 
-               run_t.gKey_long_flag=1;
-			   run_t.gTimer_4s=0;
+			   run_t.gKey_long_flag=1;
 		      
-			   keyMode++;
+			   keyMode=0;
                run_t.gKeyValue++ ;
 			   run_t.gRun_flag= RUN_SIG ;
            }
@@ -119,23 +124,25 @@ void RunCommand_Mode(uint8_t sig)
          case 0x20: //CIN2 ->ADD KEY
              if(run_t.gPower_On ==1){
 
-
+					 keyMode=0;
 				 if( run_t.gKeyLong ==1){
 
-                    run_t.gKey_long_flag=1;
+					 run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
+					run_t.gKey_long_flag=1;
 					run_t.gTimes_hours++;
 				    if(run_t.gTimes_hours >24){
 						run_t.gTimes_hours=0;
 					}
-
+                    run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
 				 }
 				 else{
 
-					if(dispt==0){
 
-						dispt++;
-						run_t.gTimes_hours_temp=12;
-					 }
+				     if(run_t.gSig==0){
+						run_t.gSig ++;
+						run_t.gTimes_hours_temp =12;
+
+					}
 
 					  run_t.gTimes_hours_temp++;
 					  if(run_t.gTimes_hours_temp >24)
@@ -151,22 +158,24 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x10: //CIN3 -> DEC KEY
              if(run_t.gPower_On ==1){
+			 	 keyMode=0;
 			 	  if( run_t.gKeyLong ==1){
-
+                     run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
                     run_t.gKey_long_flag=1;
 					run_t.gTimes_hours--;
 				    if(run_t.gTimes_hours <0){
 						run_t.gTimes_hours=24;
 					}
+					run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
 
 				 }
 				 else{
 
-                     if(dispt==0){
+                     if(run_t.gSig==0){
+						run_t.gSig ++;
+						run_t.gTimes_hours_temp =12;
 
-						dispt++;
-						run_t.gTimes_hours_temp=12;
-					 }
+					}
 
 					  run_t.gTimes_hours_temp--;
 					  if(run_t.gTimes_hours_temp <0)
@@ -182,7 +191,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x08: //CIN4 -> FAN KEY 
                if(run_t.gPower_On ==1){
-
+                  keyMode=0;
 			     fanflag = fanflag ^ 0x01;
 				 if(fanflag == 1){
                      run_t.gFan =1; //turn off fan 
@@ -199,6 +208,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x04: //CIN5  -> STERILIZATION KEY 
              if(run_t.gPower_On ==1){
+				keyMode=0;
 
 			    plasmaflag = plasmaflag ^ 0x01;
 				if(plasmaflag ==1){
@@ -216,6 +226,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x02: //CIN6  ->DRY KEY 
                if(run_t.gPower_On ==1){
+				   keyMode=0;
 
 			       dryflag = dryflag ^ 0x01;
 				   if(dryflag == 1){
@@ -233,7 +244,8 @@ void RunCommand_Mode(uint8_t sig)
          case 0x01: //CIN7 -> AI KEY
              if(run_t.gPower_On ==1){
 
-			       aiflag = aiflag ^ 0x01;
+			      keyMode=0;
+				  aiflag = aiflag ^ 0x01;
 				   if(aiflag ==1){
  						run_t.gAi=1;
 				   }
@@ -334,29 +346,56 @@ void RunCommand_Order(void)
 
 		}
 
-		if(run_t. gTimer_1s==1){
+		if( run_t.gTimer_300ms==1){
 
-			run_t. gTimer_1s=0;
-			if(run_t.gKey_long_flag==1){
-				run_t.gKey_long_flag =0;
+			run_t.gTimer_300ms=0;
+			if(run_t.gKeyLong ==1){
+				
 
 				m = (run_t.gTimes_hours /10) %10;
 				n=  (run_t.gTimes_hours %10);
 				TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-				
+				if(run_t.gTimer_1s==1){
+					run_t.gTimer_1s=0;
+
+					 TM1640_Write_4Bit_Data(0,0,m,n,2) ; //timer is default 12 hours "H0:12"
+
+				}
+				TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
+				if(run_t.gTimer_key_5s==1){
+                     run_t.gTimer_key_5s=0;
+                     run_t.gKeyLong =1;
+					 
+				}
 
 		     }
 		   else{ 
-			run_t. gTimer_1s=0;
-			
-            m = (run_t.gTimes_hours_temp /10) %10;
-			n=  (run_t.gTimes_hours_temp %10);
-			TM1640_Write_4Bit_Data(m,n,0,0,0) ; //timer is default 12 hours "12:00"
+				run_t.gTimer_300ms=0;
 
-			}
 
-		}
+			   if(run_t.gKey_long_flag==1){
+					 run_t.gKey_long_flag=0;
 
+                     m = (run_t.gTimes_hours /10) %10;
+				     n=  (run_t.gTimes_hours %10);
+				     TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
+
+               }
+			   else{
+				if(run_t.gSig==0){
+					run_t.gSig ++;
+					run_t.gTimes_hours_temp =12;
+
+				}
+	            m = (run_t.gTimes_hours_temp /10) %10;
+				n=  (run_t.gTimes_hours_temp %10);
+				TM1640_Write_4Bit_Data(m,n,0,0,0) ; //timer is default 12 hours "12:00"
+
+				}
+			  }
+
+		  }
+		
 						 
 
 		if(run_t.gTimer_key_2s==1){//1s read one data

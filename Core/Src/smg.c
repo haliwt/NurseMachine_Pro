@@ -136,19 +136,14 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
          // TM1640_Write_OneByte(DOUBLEDOT);//display ":"
      }
      else if(sl ==1){
-          TM1640_Write_OneByte(segNumber[0]);//display "0"  
+          TM1640_Write_OneByte(segNumber[0]|DOUBLEDOT);//display "0"  
       }
      else if(sl==2){
         TM1640_Write_OneByte(OFFLED);//display "NULL"
      }
      TM1640_Stop();
     
-    //diplay ":"
-   // TM1640_Start();
-  //  TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
-  //  if(sl == 2) TM1640_Write_OneByte(OFFLED);//display "NULL"
-  //  else TM1640_Write_OneByte(DOUBLEDOT);//display ":"
-  //  TM1640_Stop();
+
     
     //minute 
     TM1640_Start();
