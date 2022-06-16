@@ -5,7 +5,8 @@
 #include "fan.h"
 #include "tim.h"
 
-
+   static uint8_t fira,fird,fan,dry,ster,ai,po;
+   static uint8_t fanflag,dryflag,sterflag,aiflag;
 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig) ;
 
@@ -163,8 +164,7 @@ void CProcess_Run(void)
 ************************************************************************/ 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
-   static uint8_t fira,fird,fan,dry,ster,ai,po;
-   static uint8_t fanflag,dryflag,sterflag,aiflag;
+
    static int8_t n,m,p,q;
     
    switch (me->state__) {
@@ -194,9 +194,9 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                 
                     case 0:
 				
-                     if(run_t.gTimer_500ms ==1){
+                    // if(run_t.gTimer_200ms ==1){
                          run_t.gRun_flag = POWER_SIG;
-                         run_t.gTimer_500ms = 0;
+                         run_t.gTimer_200ms = 0;
                          KeyLed_Power_On();
                          LED_MODE_On();
                          LED_TempHum_On();
@@ -249,7 +249,8 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                          //open PTC and FAN ,Ultrasonic 
                       
                      
-                   }
+                  // }
+			#if 0
                     if(run_t. gTimer_1s==1){
                         run_t. gTimer_1s=0;
                          if(fira !=0 || fird !=0){
@@ -264,12 +265,15 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 
                     }
 
+					#endif 
+#if 0
                    if(run_t.gTimer_key_2s==1){//1s read one data
                        run_t.gTimer_1s =0;
                        Display_DHT11_Value(&DHT11);
 					   
                     
                   }
+			#endif 
 				   run_t.gKeyValue++ ;
                  break;
                   
@@ -495,7 +499,64 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 }
 
 
+void RunCommand(void)
+{
+   // if(run_t.gTimer_200ms ==1){
+                         run_t.gRun_flag = POWER_SIG;
+                         run_t.gTimer_200ms = 0;
+                         KeyLed_Power_On();
+                       //  LED_MODE_On();
+                       //  LED_TempHum_On();
+                         
+                         if(fan==0){ //0 -ON
+                            LED_Fan_OnOff(0);
+                            FAN_CCW_RUN();
+                            run_t.gFan_flag=1;
+                         }
+                         else{ //1-OFF
+                            LED_Fan_OnOff(1);
+                            PTC_SetLow(); //PTC turn off 
+                            FAN_Stop();
+                            run_t.gFan_flag=0;
+                         }
+                         
+                         if(ster==0){ //0 -ON
+                            LED_Sterilizer_OnOff(0);
+                            PLASMA_SetHigh();
+                            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
+                         }
+                         else{ //1 -OFF
+                              LED_Sterilizer_OnOff(1);
+                              PLASMA_SetLow();
+                             HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic off
+                         }
+                            
+                              
+                         if(dry==0){
+                            LED_Dry_OnOff(0);
+                            if(run_t.gFan_flag==1) //fan open maybe open PTC ,
+                                 PTC_SetHigh();
+                            else{
+                                PTC_SetLow();
+                            }
+                         }
+                         else{
+                            LED_Dry_OnOff(1);
+                            PTC_SetLow();
+                         }
+                         
+                         if(ai==0){//ON
+                            LED_AI_OnOff(0);
+                            AI_Function_OnOff(0);
+                         }
+                         else{ //Off
+                             LED_AI_OnOff(1);
+                             AI_Function_OnOff(1);
+                         }
+                         //open PTC and FAN ,Ultrasonic 
 
+
+}
 
 
 

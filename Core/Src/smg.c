@@ -271,16 +271,33 @@ void KeyLed_Power_On(void)
      TM1640_Start();
      TM1640_Write_OneByte(AddrFixed);//Add fixed reg
      TM1640_Stop();
+
+
+     TM1640_Start();
+     TM1640_Write_OneByte(0xC8);//0xC8H->GRID9
+     TM1640_Write_OneByte(MODELED);//display "MODE Key"
+     TM1640_Stop();
+	 
+
+	 TM1640_Start();
+     TM1640_Write_OneByte(0xC9);//0xC9H->GRID10
+     TM1640_Write_OneByte(TEMPLED);//display "TEMPLED Key"
+     TM1640_Stop();
+
+	 
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCE);//0xC4H->GRID15
-     TM1640_Write_OneByte(POWERLED);//display "power Key"
+     TM1640_Write_OneByte(POWER_KEYLED);//display "power Key"
      TM1640_Stop();
+
+
+	
 
     //open diplay 
     
     TM1640_Start();
-    TM1640_Write_OneByte(OpenDispTM1640|0x8c);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x8F);//
     TM1640_Stop();
 }
 
