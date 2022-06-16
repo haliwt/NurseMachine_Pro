@@ -193,9 +193,9 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                 
                     case 0:
 				
-                     if(run_t.gTimer_200ms ==1){
+                     if(run_t.gTimer_500ms ==1){
                          run_t.gRun_flag = POWER_SIG;
-                         run_t.gTimer_200ms = 0;
+                         run_t.gTimer_500ms = 0;
                          KeyLed_Power_On();
                     
                          
