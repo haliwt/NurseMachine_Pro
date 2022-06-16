@@ -780,8 +780,8 @@ void RunCommand_Order(void)
 			 	Smg_AllOff();
 	  	 	}
          
-            Breath_Led();
-          
+           Breath_Led();
+          run_t.gKeyValue++;
 
 
 	  break;
@@ -841,19 +841,17 @@ void RunCommand_Order(void)
 
 		if(run_t. gTimer_1s==1){
 
+			run_t. gTimer_1s=0;
 			if(run_t.gKey_long_flag==1){
+				run_t.gKey_long_flag =0;
 
 				m = (run_t.gTimes_hours /10) %10;
 				n=  (run_t.gTimes_hours %10);
 				TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-				if(run_t.gTimer_4s==1){
-				run_t. gTimer_1s=0;
-				run_t.gKey_long_flag =0;
-				run_t.gTimer_4s=0;
-			}
+				
 
-		}
-		else{ 
+		     }
+		   else{ 
 			run_t. gTimer_1s=0;
 			
             m = (run_t.gTimes_hours_temp /10) %10;
