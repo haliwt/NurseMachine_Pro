@@ -307,7 +307,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    static uint8_t temp,temp1,t2,t3,t4,t5,t6;
+    static uint8_t temp,temp1,t2,t3,t4,t5,t6,t7;
     
     if(htim->Instance==TIM3){
        temp ++ ;
@@ -337,10 +337,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
           if(t3==10){ //100 *10 =1000ms = 1s
               t3=0;
               t4++;
+		      t7++;
+			  if(t7==4)run_t.gTimer_4s=1;
               run_t.gTimer_1s =1;
-              if(run_t.gTimer_start ==1){
+              if(run_t.gTimer_5s_start ==1){
                     t5++;
+					if(t5==5){
+					 t5=0;
 					run_t.gTimer_key_5s = 1;
+					}
               }
              
               if(t4==2){

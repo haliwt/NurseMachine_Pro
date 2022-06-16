@@ -8,6 +8,7 @@
  
 
 static void CProcessDispatch(CProcess1 *me, uint8_t sig) ;
+static void SteupTimes_Handle(void);
 
 DHT11_Data_TypeDef DHT11;
 uint8_t ReceiveBuffer[1];
@@ -53,12 +54,14 @@ void CProcess_Run(void)
          case 0x80: //CIN0 -> POWER KEY 
              powerflag = powerflag ^ 0x01;
              if(powerflag == 1){
+			 	run_t.gPower_On =1;
                 run_t.gSig = POWER_SIG ;
                 cprocess.state__ =  CODE ;
                 cprocess.cmdCtr__ = 1;
              }
              else{
                  Smg_AllOff();
+				 run_t.gPower_On =0;
                  run_t.gSig = KEY_SIG ;
                  cprocess.state__=IDLE; //state 
                  run_t.gSig =KEY_SIG ;
@@ -66,19 +69,21 @@ void CProcess_Run(void)
          break;
          
          case 0x40: //CIN1 -> MODE KEY
-             if(run_t.gRun_flag ==POWER_SIG){
-                 run_t.gSig = MODE_SIG;
+             if(run_t.gPower_On ==1){
+                
+				 
+				 run_t.gAdd_flag=0;
+                run_t.gDec_flag=0; // //input setup times handle   
+				 run_t.gSig = MODE_SIG;
                  cprocess.state__ =  RUN ;
                  cprocess.cmdCtr__ = 3;
-                 run_t.gKeyLongPressed++ ; //adjust long key be pressed numbers
-                 
-             
+                
              }
           
          break;
          
          case 0x20: //CIN2 ->ADD KEY
-             if(run_t.gRun_flag ==POWER_SIG){
+             if(run_t.gPower_On ==1){
                   run_t.gSig = ADD_SIG;
                   cprocess.state__ =  RUN ;
                   cprocess.cmdCtr__ = 5;
@@ -89,7 +94,7 @@ void CProcess_Run(void)
          break;
          
          case 0x10: //CIN3 -> DEC KEY
-             if(run_t.gRun_flag ==POWER_SIG){
+             if(run_t.gPower_On ==1){
                   run_t.gSig = DEC_SIG;
                   cprocess.state__ =  RUN ;
                  cprocess.cmdCtr__ = 7;
@@ -100,7 +105,7 @@ void CProcess_Run(void)
          break;
          
          case 0x08: //CIN4 -> FAN KEY 
-               if(run_t.gRun_flag ==POWER_SIG){
+               if(run_t.gPower_On ==1){
                   run_t.gSig = FAN_SIG;
                    cprocess.state__ =  RUN ;
                    cprocess.cmdCtr__ = 11;
@@ -110,7 +115,7 @@ void CProcess_Run(void)
          break;
          
          case 0x04: //CIN5  -> STERILIZATION KEY 
-             if(run_t.gRun_flag ==POWER_SIG){
+             if(run_t.gPower_On ==1){
                   run_t.gSig = PLASMA_SIG;
                   cprocess.state__ =  RUN ;
                    cprocess.cmdCtr__ = 13;
@@ -121,7 +126,7 @@ void CProcess_Run(void)
          break;
          
          case 0x02: //CIN6  ->DRY KEY 
-               if(run_t.gRun_flag ==POWER_SIG){
+               if(run_t.gPower_On ==1){
                   run_t.gSig = DRY_SIG;
                     cprocess.state__ =  RUN ;
                     cprocess.cmdCtr__ = 15;
@@ -132,7 +137,7 @@ void CProcess_Run(void)
          break;
          
          case 0x01: //CIN7 -> AI KEY
-             if(run_t.gRun_flag ==POWER_SIG){
+             if(run_t.gPower_On ==1){
                   run_t.gSig = AI_SIG;
                    cprocess.state__ =  RUN ;
                    cprocess.cmdCtr__ = 17;
@@ -164,15 +169,15 @@ void CProcess_Run(void)
 static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 {
 
-   static uint8_t fira,fird,fan,dry,ster,ai,po;
+   static uint8_t fan,dry,ster,ai,po,longtimes,keyMode=0xff;
    static uint8_t fanflag,dryflag,sterflag,aiflag;
-   static int8_t n,m,p,q;
+   static uint8_t n,m,p;
     
    switch (me->state__) {
    case IDLE: //state 
      switch (sig) {
           case KEY_SIG:
-             //run_t.gTimer = 0 ;  //timer 500ms scan key value
+              me->cmdCtr__ = 0;   //timer 500ms scan key value
 
 	         if(run_t.gPower_Cmd==1 || po==0 ){
 			 	  if(po==0)po++;
@@ -188,7 +193,8 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
      case CODE: //state 
       switch (sig) {
           case POWER_SIG:
-                me->cmdCtr__ = 2;     /* SLASH-STAR count as comment */
+                me->cmdCtr__ = 1;     /* SLASH-STAR count as comment */
+	            run_t.gKeyValue=1 ;
                 switch(run_t.gPower_Cmd){
                 
                     case 0:
@@ -248,37 +254,53 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                       
                      
                    }
-			#if 1
+			
                     if(run_t. gTimer_1s==1){
-                        run_t. gTimer_1s=0;
-                         if(fira !=0 || fird !=0){
+                       
+                         if(run_t.gTimer_flag==1){
+						 	 
                              m = (run_t.gTimes_hours /10) %10;
-                             n=  (run_t.gTimes_hours %10);
-                             p= (run_t.gTimes_minutes /10) %10;
-                             q= run_t.gTimes_minutes %10;
-                             TM1640_Write_4Bit_Data(m,n,p,q,0) ;
+					         n=  (run_t.gTimes_hours %10);
+					         TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
+                             if(run_t.gTimer_4s==1){
+								run_t. gTimer_1s=0;
+								run_t.gTimer_flag =0;
+							    run_t.gTimer_4s=0;
+							 }
+							 
                          }
-                         else  
-                            TM1640_Write_4Bit_Data(0x01,0x2,0x00,0x00,0) ;  //display times  4bit
+                         else{ 
+						 	 run_t. gTimer_1s=0;
+                              if(p==0){
+
+									p++;
+									run_t.gTimes_hours_temp=12;
+							  }
+
+							  m = (run_t.gTimes_hours_temp /10) %10;
+						      n=  (run_t.gTimes_hours_temp %10);
+						      TM1640_Write_4Bit_Data(m,n,0,0,0) ; //timer is default 12 hours "12:00"
+
+						 }
 
                     }
 
-					#endif 
-#if 2
+				 
+
                    if(run_t.gTimer_key_2s==1){//1s read one data
                        run_t.gTimer_1s =0;
                        Display_DHT11_Value(&DHT11);
 					   
                     
-                  }
-			#endif 
-				   run_t.gKeyValue++ ;
+                  	}
+			
+				   
                  break;
                   
                   case 1:
                          me->state__=IDLE;
                          sig =KEY_SIG ;
-				  	run_t.gKeyValue++ ;
+				  
                    break;
              }
            break;
@@ -290,137 +312,64 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
     
       }
       break;
+   /**********************state RUN*************************************/
    case RUN: //state
       switch (sig) {
        
-          case MODE_SIG:
-           if(run_t.gKeyLongPressed > 300){  //Mode key be pressed long   
+          case MODE_SIG: //0x04
+
+	       if(longtimes != keyMode ){
+		   	     longtimes = keyMode;
+                run_t.gKeyLongPressed ++;  //long be pressed counter numbers
+	       }
+           if(run_t.gKeyLongPressed > 100){  //Mode key be pressed long 
+                run_t.gKeyLongPressed =0;
                run_t.gKeyLong =1;
-               run_t.gTimer_start =1; //timer is 5s start 
-              // TM1640_Write_4Bit_Data(0x00,0x0,0x01,0x02,1) ; //timer is default 12 hours "H0:12"
-               
+               run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
+               me->state__=RUN;
               sig = START_SIG ; 
+			  run_t.gKeyValue++ ;
            } 
-           else{ //shot be pressed 
-               if((fira !=0 || fird !=0)){
-                   TM1640_Write_4Bit_Data(0,0,m,n,1) ;   
-               }
-               else{
-                  TM1640_Write_4Bit_Data(0x0,0x0,0x01,0x02,1) ;  //display times  4bit //display times of timer "H0:XX"
-               }
-               run_t.gKeyLong =0;
-               run_t.gKeyLongPressed=0;
-           
+           else if(run_t.gKeyLong ==0){ //shot be pressed 
+
+               run_t.gTimer_flag=1;
+			   run_t.gTimer_4s=0;
+               me->state__=CODE;
+		       sig = POWER_SIG ; 
+			   keyMode++;
+               run_t.gKeyValue++ ;
            }
-		    run_t.gKeyValue++ ;
-            break;
+		    
+          break;
+
+		  
           case ADD_SIG:
-             if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
-                   run_t.gTimer_start =0;
-                   if(fira == 0){
-                      fira =1;
-                        run_t.gTimes_hours = 13; // 11 hours
-                   }
-                   else{
-                     run_t.gTimes_hours++;
-                       
-                   }
-                   if(run_t.gTimes_hours >24){
-                      run_t.gTimes_hours=0;
-                   }
-                 
-                     
-                m = (run_t.gTimes_hours /10) %10;
-                n=  (run_t.gTimes_hours %10);
-                TM1640_Write_4Bit_Data(0,0,m,n,1) ;
-                run_t.gTimer_start =1;                    
-                sig = START_SIG ;                  
-             
-             }
-             else{
-          
-             
-             }
-              run_t.gKeyValue++ ; 
+		  	
+                run_t.gAdd_flag=1;
+                run_t.gDec_flag=0; // //input setup times handle   
+                run_t.gTimer_5s_start =0;  
+				  me->state__=RUN;
+                sig = START_SIG ;  //input setup times handle
+
+			keyMode++;
+               run_t.gKeyValue++ ; 
           break; 
              
-          case DEC_SIG:
-              if(run_t.gTimer_key_5s < 1 && run_t.gKeyLong ==1){
-                   run_t.gTimer_start =0;
-                   if(fird == 0){
-                      fird =1;
-                      run_t.gTimes_hours = 11; // 11 hours
-                   }
-                   else{
-                      run_t.gTimes_hours--;
-                       
-                   }
-                 if(run_t.gTimes_hours < 0 ){
-                     run_t.gTimes_hours=24; //hours
-                       
-                   }
-                 m = (run_t.gTimes_hours /10) %10;
-                 n=  (run_t.gTimes_hours %10);
-                 TM1640_Write_4Bit_Data(0,0,m,n,1) ;  
-                 run_t.gTimer_start =1;                   
-                 sig = START_SIG ;    
-             }
+          case DEC_SIG: //"-"
+		  	   run_t.gAdd_flag=0;
+               run_t.gDec_flag=1; // //input setup times handle   
+              run_t.gTimer_5s_start =0; 
+			   me->state__=RUN;
+              sig = START_SIG ;    
+             keyMode++;
                run_t.gKeyValue++ ;
           break;
+
+		  //times setup timer handle 
              
            case START_SIG:
-               if(run_t.gKeyLong ==1 && (fira !=0 || fird !=0)){
-                 if(run_t.gTimer_key_5s==1){
-            
-                    run_t.gTime_total_hours = run_t.gTimes_hours * 3600;  
-                     
-                    if(run_t.gTimes_hours ==0)run_t.gTimer_Cmd =0; //don't timer times
-                    else run_t.gTimer_Cmd =1; //start timers times times 
-                     
-                    run_t.gKeyLongPressed =0;
-                    run_t.gKeyLong=0;
-                    fira=0;
-                    fird =0;
-                    run_t.gTimer_key_5s=0;
-                    //state transfer
-                    me->state__=CODE;
-                    sig =POWER_SIG;
-                 
-                 }
-               
-               }
-               else{
-                  if(run_t.gTimer_key_5s==1 && (run_t.gKeyLong ==1)){
-                    run_t.gTimer_Cmd =1;
-                    run_t.gTime_total_hours = 12*3600; //hours
-                    run_t.gTimes_hours =12;
-                    run_t.gKeyLongPressed =0;
-                    run_t.gKeyLong=0;
-                    run_t.gTimer_key_5s=0;
-                     //state transfer
-                    me->state__=CODE;
-                    sig =POWER_SIG;
-                 }
-              }
-               
-             if(fira !=0 || fird !=0){ //blank SMG effect
-                 m = (run_t.gTimes_hours /10) %10;
-                 n=  (run_t.gTimes_hours %10);
-                 TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
-             }
-             else{
-                 TM1640_Write_4Bit_Data(0,0,1,2,1) ; //timer is default 12 hours "H0:12"
-             
-             }
-              
-             if(run_t.gKeyLong==1){ //turn off Smg display 
-                  
-                  if(run_t.gTimer_key_2s==1){ //turn off smg
-                      run_t.gTimer_key_2s=0;
-                      TM1640_Write_4Bit_Data(0,0,1,2,2) ; //turn off 4BIT smg
-                  }
-             
-             }
+		   	   keyMode++;
+              SteupTimes_Handle();
               run_t.gKeyValue++ ;  
           break;
              
@@ -497,8 +446,105 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
 }
 
 
+static void SteupTimes_Handle(void)
+{
+
+  static uint8_t firstSetup,m,n,timesf;
+  static int8_t times;
+   //the first input setup times
+   if(run_t.gKeyLong ==1){ // long times be pressed
+   	    firstSetup ++;
+   	   
+        if(run_t.gTimer_key_5s < 1){
+   
+           
+                if(run_t.gAdd_flag ==1){
+				    run_t.gTimes_hours++;
+					if(run_t.gTimes_hours>24)run_t.gTimes_hours=0 ;
+                 }
+				 else if(run_t.gDec_flag ==1){
+                    run_t.gTimes_hours -- ;
+					if(run_t.gTimes_hours <0)run_t.gTimes_hours=24;
+
+				 }
 
 
 
+			
+			m = (run_t.gTimes_hours /10) %10;
+            n=  (run_t.gTimes_hours %10);
+           TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
+
+        }
+	    else{ //shot times be pressed 
+
+
+		     run_t.gTime_total_hours = run_t.gTimes_hours * 3600;  
+                     
+             if(run_t.gTimes_hours ==0)run_t.gTimer_Cmd =0; //don't timer times
+              else run_t.gTimer_Cmd =1; //start timers times times 
+                     
+               run_t.gKeyLongPressed =0;
+               run_t.gKeyLong=0;
+              
+         
+            //state transfer
+            cprocess.state__=CODE;
+            run_t.gSig =POWER_SIG;
+
+			 
+		}
+   }
+   else{ //shot times be pressed
+         
+          if(timesf ==0 ){
+		   	 times ++ ;
+		     times=12;
+           if(run_t.gAdd_flag ==1){
+				    times++;
+					if(times>24)times =0 ;
+             }
+			else if(run_t.gDec_flag ==1){
+                    times -- ;
+					if(times <0)times=24;
+
+				 }
+                
+
+			}  
+         else{
+
+				if(run_t.gAdd_flag ==1){
+				    times++;
+					if(times>24)times =0 ;
+             }
+				 else if(run_t.gDec_flag ==1){
+                    times -- ;
+					if(times <0)times=24;
+
+				 }
+                
+
+			}  
+
+
+
+		 if(timesf ==0 ){
+		   	times=12;
+		 }
+		 run_t.gTimes_hours_temp =times;
+
+         m = (run_t.gTimes_hours_temp /10) %10;
+         n=  (run_t.gTimes_hours_temp %10);
+         TM1640_Write_4Bit_Data(m,n,0,0,0) ; //timer is default 12 hours "12:00"
+           //state transfer
+		  cprocess.state__=CODE;
+            run_t.gSig =POWER_SIG;
+                  
+
+
+   }
+
+}
 
 
