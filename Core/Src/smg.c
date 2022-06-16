@@ -244,7 +244,7 @@ void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
 *Return Ref: NO
     *
 *****************************************************************************/
-void LED_Power_OnOff(uint8_t sel)
+void LED_Power_Off(void)
 {
      
      TM1640_Start();
@@ -253,10 +253,7 @@ void LED_Power_OnOff(uint8_t sel)
     
      TM1640_Start();
      TM1640_Write_OneByte(0xCE);//0xC4H->GRID15
-     if(sel==0)
-         TM1640_Write_OneByte(POWERLED);//display "power Key"
-     else 
-          TM1640_Write_OneByte(OFFLED);//display "NULL"
+     TM1640_Write_OneByte(POWERLED);//display "power Key"
      TM1640_Stop();
 
     //open diplay 
@@ -482,7 +479,8 @@ void Bdelay_us(uint16_t t)
 void Breath_Led(void)
 {
     
-    LED_Power_OnOff(0);
+    LED_Power_Off();
+	
     #if 0
     if(powerLed ==0){
         for(i=0;i<10;i++){
@@ -594,9 +592,47 @@ void Breath_Led(void)
 
 void Smg_AllOff(void)
 {
-    //close diplay
+
+   
+	 TM1640_Start();
+     TM1640_Write_OneByte(AddrAutoAdd);//auto Add address one mode
+
+
+
+	 
+     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	  TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+
+	
+	 TM1640_Stop();
+
+	 TM1640_Start();
+     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
+     TM1640_Stop();
+    
+     TM1640_Start();
+     TM1640_Write_OneByte(0xCE);//0xC4H->GRID15
+     TM1640_Write_OneByte(POWERLED);//display "power Key"
+     TM1640_Stop();
+
+
+     //close diplay
     TM1640_Start();
-    TM1640_Write_OneByte(CloseDispTM1640);//
+    TM1640_Write_OneByte(OpenDispTM1640|0x80);//
     TM1640_Stop();
 
 }

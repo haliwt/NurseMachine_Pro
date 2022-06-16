@@ -74,7 +74,6 @@ void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
 void TM1640_TimeLed_OnOff(uint8_t sel);
 
 
-void LED_Power_OnOff(uint8_t sel);
 void LED_MODE_On(void);
 void LED_TempHum_On(void);
 void LED_Fan_OnOff(uint8_t sel);

@@ -172,16 +172,10 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
      switch (sig) {
           case KEY_SIG:
              //run_t.gTimer = 0 ;  //timer 500ms scan key value
-            if(po==0){
-                po++;
-                Smg_AllOff();
-            }
-            if(run_t.gPower_Cmd==1){
-                 Smg_AllOff();
-                 run_t.gPower_Cmd++ ;
-            }
-            run_t.gRun_flag = KEY_SIG;
-            Breath_Led();
+           
+             Smg_AllOff();
+         
+          //  Breath_Led();
             run_t.gKeyValue++ ;
             break;
           }
@@ -279,7 +273,7 @@ static void CProcessDispatch(CProcess1 *me, uint8_t sig)
                   case 1:
                          me->state__=IDLE;
                          sig =KEY_SIG ;
-				  run_t.gKeyValue++ ;
+				  	run_t.gKeyValue++ ;
                    break;
              }
            break;
