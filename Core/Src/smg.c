@@ -480,114 +480,6 @@ void Breath_Led(void)
 {
     
     LED_Power_Off();
-	
-    #if 0
-    if(powerLed ==0){
-        for(i=0;i<10;i++){
-            LED_Power_OnOff(0); //POWER LED ON 
-            //open diplay 
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
-            TM1640_Stop();
-            Bdelay_us(t);
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
-            TM1640_Stop();
-             Bdelay_us(t);
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
-            TM1640_Stop();
-             Bdelay_us(t);
-
-              //open diplay 
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
-            TM1640_Stop();
-            Bdelay_us(30001-t)  ;
-  
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
-            TM1640_Stop();
-             Bdelay_us(30001-t)  ;
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
-            TM1640_Stop();
-             Bdelay_us(30001-t)  ;
-
-
-             TM1640_Start();
-             TM1640_Write_OneByte(CloseDispTM1640);//
-             TM1640_Stop();
-            Bdelay_us(30001-t)  ;
-        }
-     }
-     t++;
-     if(t==30000){
-        powerLed = 1;
-     }
-
-     if(powerLed==1){
-         for(i=0;i<40;i++){
-           // LED_Power_OnOff(0); //POWER LED ON 
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
-            TM1640_Stop();
-            Bdelay_us(t);
-
-              TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
-            TM1640_Stop();
-             Bdelay_us(t);
-
-              TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
-            TM1640_Stop();
-            Bdelay_us(t);
-
-            Bdelay_us(t);
-            TM1640_Start();
-            TM1640_Write_OneByte(CloseDispTM1640);//
-            TM1640_Stop();
-            Bdelay_us(t) ;
-           //LED_Power_OnOff(1); //POWER LED OFF
-
-             Bdelay_us(t);
-            TM1640_Start();
-            TM1640_Write_OneByte(CloseDispTM1640);//
-            TM1640_Stop();
-           Bdelay_us(30001-t)  ;
-
-             TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x80);//
-            TM1640_Stop();
-            Bdelay_us(30001-t)  ;
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x81);//
-            TM1640_Stop();
-             Bdelay_us(30001-t)  ;
-
-            TM1640_Start();
-            TM1640_Write_OneByte(OpenDispTM1640|0x82);//
-            TM1640_Stop();
-            
-
-
-
-           Bdelay_us(30001-t)  ;
-
-         }
-         t--;
-         if(t==1) powerLed =0;
-
-     }
-    #endif 
-    
 }
 
 void Smg_AllOff(void)
@@ -600,34 +492,25 @@ void Smg_AllOff(void)
 
 
 	 
-     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	  TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-	 TM1640_Write_OneByte(OFFLED);//display "MODE Key"
-     TM1640_Write_OneByte(OFFLED);//display "MODE Key"
+     TM1640_Write_OneByte(OFFLED);//display "0XC0"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC1"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC2"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC3"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC4"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC5"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC6"
+     TM1640_Write_OneByte(OFFLED);//display "0XC7"
+     TM1640_Write_OneByte(OFFLED);//display "0XC8"
+	 TM1640_Write_OneByte(OFFLED);//display "0XC9"
+	 TM1640_Write_OneByte(OFFLED);//display "0XCA"
+	 TM1640_Write_OneByte(OFFLED);//display "0XCB"
+	 TM1640_Write_OneByte(OFFLED);//display "0XCC"
+	 TM1640_Write_OneByte(OFFLED);//display "0XCD"
+	 TM1640_Write_OneByte(OFFLED);//display "0XCE"
+     TM1640_Write_OneByte(OFFLED);//display "0XCF"
 
 	
-	 TM1640_Stop();
-
-	 TM1640_Start();
-     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
-     TM1640_Stop();
-    
-     TM1640_Start();
-     TM1640_Write_OneByte(0xCE);//0xC4H->GRID15
-     TM1640_Write_OneByte(POWERLED);//display "power Key"
-     TM1640_Stop();
+	
 
 
      //close diplay

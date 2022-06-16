@@ -47,7 +47,7 @@ extern RUN_T run_t;
 
 void CProcessRun_Init(void);
 void CProcess_Run(void);
-void RunCommand(void);
+
 
 
 #endif 
