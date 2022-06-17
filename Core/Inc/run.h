@@ -4,7 +4,7 @@
 
 
 enum Signal {                   /* enumeration for CProcess signals */
-    KEY_SIG,POWER_SIG,RUN_SIG,START_SIG,MODE_SIG,ADD_SIG,DEC_SIG,FAN_SIG,PLASMA_SIG,DRY_SIG,AI_SIG,IDEL_SIG
+    KEY_SIG,RUN_SIG,IDEL_SIG
 };
 
 enum State {                     /* enumeration for CProcess states */
@@ -44,7 +44,6 @@ typedef struct _RUN_T{
    uint8_t  gKeyLong;
    uint8_t  gTimer_4s;
    uint8_t  gTimer_key_5s;
-   uint8_t  gTimer_5s_start;
    uint8_t  gTimer_Cmd;
    uint8_t  gFan;
    uint8_t  gPlasma;
