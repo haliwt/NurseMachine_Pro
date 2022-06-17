@@ -30,6 +30,7 @@ typedef struct _RUN_T{
 
   
    uint8_t  gTimer_10ms;
+   uint8_t  gTimer_15ms;
    uint8_t  gTimer_20ms;
    uint8_t  gTimer_30ms;
    uint8_t  gTimer_50ms;
