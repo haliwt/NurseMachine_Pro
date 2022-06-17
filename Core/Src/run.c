@@ -353,17 +353,21 @@ void RunCommand_Order(void)
 					n=  (run_t.gTimes_hours %10);
                	}
 				TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-				HAL_Delay(10);
                 if(run_t.gKeyLong ==1){
 					
-                   
-						TM1640_Write_4Bit_Data(0,0,m,n,2) ; //timer is default 12 hours "H0:12"
-		               // HAL_Delay(5);
-						TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
-						//HAL_Delay(5);
+                     
+					  if(run_t.gTimer_10ms==1){
+		                   Times_Led_IndicationOnOff(1); //Off
+					  	}
+		              else{
+						 Times_Led_IndicationOnOff(0); //On
+
+					  }
+					
                     
 					
                 }
+				run_t.gTimer_10ms=0;
 
 		     }
 		   else{ 

@@ -77,6 +77,8 @@ void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
 
 
 void KeyLed_Power_On(void);
+void Times_Led_IndicationOnOff(uint8_t sel);
+
 
 
 void Display_Function_OnOff(void);

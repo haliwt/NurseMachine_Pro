@@ -17,7 +17,8 @@
 #define DRYLED          (seg_g + seg_h)
 #define AILED           (seg_g + seg_h)
 
-#define TIMELED        (seg_f)
+#define TIMESLED        (seg_f)
+#define TIMESLED_OFF    (seg_g+seg_h)
 
 #define HOUR            (seg_b + seg_c +seg_e+seg_f +seg_g)  //"H"
 
@@ -274,7 +275,7 @@ void KeyLed_Power_On(void)
 
 	 TM1640_Start();
      TM1640_Write_OneByte(0xC9);//0xC9H->GRID10
-     TM1640_Write_OneByte(TEMPLED);//display "TEMPLED Key"
+     TM1640_Write_OneByte(TEMPLED);//display "Temperature LED Key"
      TM1640_Stop();
 
 	 
@@ -421,6 +422,30 @@ void Display_Function_OnOff(void)
     TM1640_Stop();
 
 
+
+}
+void Times_Led_IndicationOnOff(uint8_t sel)
+{
+	 TM1640_Start();
+     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
+     TM1640_Stop();
+
+
+  
+	 TM1640_Start();
+     TM1640_Write_OneByte(0xC9);//0xC9H->GRID10
+     if(sel==0)
+          TM1640_Write_OneByte(TIMESLED);//display "times LED on"
+     else
+	 	  TM1640_Write_OneByte(TIMESLED_OFF);//display "times LED off"
+     TM1640_Stop();
+
+	
+    //open diplay 
+    
+    TM1640_Start();
+    TM1640_Write_OneByte(OpenDispTM1640|0x8F);//
+    TM1640_Stop();
 
 }
 
