@@ -110,10 +110,10 @@ int main(void)
         
        if(run_t.gTimer_10ms ==1){
 	   	run_t.gTimer_10ms=0;
-        I2C_Read_From_Device(SC12B_ADDR,0x08,&ReadKeyValue,1);
+        I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,1);
        }
       
-	   RunCommand_Mode(ReadKeyValue);
+	   RunCommand_Mode(ReceiveBuffer[0]);
 	   RunCommand_Order();
        
        
