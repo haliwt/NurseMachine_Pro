@@ -273,7 +273,7 @@ void RunCommand_Mode(uint8_t sig)
 **********************************************************************/
 void RunCommand_Order(void)
 {
-   static uint8_t po,m,n;
+   static uint8_t po,m,n,multf=0;
 	switch(run_t.gRun_flag){
 
       case IDEL_SIG :
@@ -299,48 +299,76 @@ void RunCommand_Order(void)
 			KeyLed_Power_On();
 			Display_Function_OnOff();
 
-		if(run_t.gFan==0){ //0 -ON
-			FAN_CCW_RUN();
-		
-		}
-		else{ //1-OFF
+
+	   switch(run_t.gAi){
+
+	        case 0 :{
+
+			 if(multf == 0){
+
+                 multf ++ ;
+				 run_t.gFan=0;
+				 run_t.gPlasma=0;
+				 run_t.gDry=0;
+				  run_t.gAi_Led =0;
+
+
+			 }
+
+			if(run_t.gFan==0){ //0 -ON
+				FAN_CCW_RUN();
 			
-			PTC_SetLow(); //PTC turn off 
-			FAN_Stop();
-		
-		}
-
-		if(run_t.gPlasma==0){ //0 -ON
-			PLASMA_SetHigh();
-			HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
-		}
-		else{ //1 -OFF
-			PLASMA_SetLow();
-			HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic off
-		}
-
-
-		if(run_t.gDry==0){
-		   FAN_CCW_RUN();
-		   PTC_SetHigh();
+			}
+			else{ //1-OFF
+				
+				run_t.gAi_Led =1;
+				PTC_SetLow(); //PTC turn off 
+				FAN_Stop();
+			   
 			
-		}
-	   else{
-			PTC_SetLow();
-		}
-		
-		if(run_t.gAi==0){//ON
+			}
+
+			if(run_t.gPlasma==0){ //0 -ON
+				PLASMA_SetHigh();
+				HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
+			}
+			else{ //1 -OFF
+			     run_t.gAi_Led =1;
+				PLASMA_SetLow();
+				HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic off
+				
+			}
+
+
+			if(run_t.gDry==0){
+			   FAN_CCW_RUN();
+			   PTC_SetHigh();
+				
+			}
+		   else{
+		   	    run_t.gAi_Led =1;
+				PTC_SetLow();
+			}
+		   
+	       	}
+			break;
+
+			case 1:
 			
-			AI_Function_OnOff(0);
+		     run_t.gFan=1;
+			 run_t.gPlasma=1;
+			 run_t.gDry=1;
+			 run_t.gAi_Led =1;
+			 multf =0;
+			
+			//open PTC and FAN ,Ultrasonic 
+			break;
+          
+            AI_Function_OnOff();
 		}
-		else{ //Off
-		
-			AI_Function_OnOff(1);
-		}
-		//open PTC and FAN ,Ultrasonic 
-
-
-		}
+	   
+		Display_Function_OnOff();
+	 }
 
 		if( run_t.gTimer_10ms==1){
 

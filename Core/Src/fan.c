@@ -1,6 +1,7 @@
 #include "fan.h"
 #include "main.h"
 #include "tim.h"
+#include "run.h"
 
 void FAN_CCW_RUN(void)
 {
@@ -16,9 +17,9 @@ void FAN_Stop(void)
 }
 
 
-void AI_Function_OnOff(uint8_t sel)
+void AI_Function_OnOff(void)
 {
-   if(sel==0){ //On 
+   if(run_t.gAi==0){ //On 
     FAN_CCW_RUN();
     PLASMA_SetHigh(); //
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
@@ -27,6 +28,7 @@ void AI_Function_OnOff(uint8_t sel)
    }
    else{ //off 
     FAN_Stop();
+	PLASMA_SetLow(); //
     HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
     PTC_SetLow();
     }
@@ -35,7 +37,7 @@ void AI_Function_OnOff(uint8_t sel)
 void Buzzer_On(void)
 {
   uint8_t i;
-  for(i=0;i<30;i++){
+  for(i=0;i<30;i++){//
         BUZZER_SetHigh();
         HAL_Delay(1);
         BUZZER_SetLow() ;

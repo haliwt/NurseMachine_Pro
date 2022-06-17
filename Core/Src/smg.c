@@ -378,7 +378,7 @@ void Display_Function_OnOff(void)
 
      TM1640_Start();
      TM1640_Write_OneByte(0xCA);//0xCAH->GRID11
-     if(run_t.gAi==0)
+     if(run_t.gAi_Led==0)
            TM1640_Write_OneByte(AILED);//display "temperature led"
      else{
         TM1640_Write_OneByte(OFFLED);//display "NULL"
@@ -390,7 +390,7 @@ void Display_Function_OnOff(void)
 	 TM1640_Start();
      TM1640_Write_OneByte(0xCB);//0xCBH->GRID12
      if(run_t.gDry==0)
-        TM1640_Write_OneByte(DRYLED);//display "temperature led"
+        TM1640_Write_OneByte(DRYLED);//display " led"
      else 
         TM1640_Write_OneByte(OFFLED);//display "temperature led"
      TM1640_Stop();
