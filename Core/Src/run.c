@@ -94,27 +94,24 @@ void RunCommand_Mode(uint8_t sig)
 			 	 
               if(keyMode ==0){
 			  	  keyMode ++;
-			      run_t.gTimer_key_2s=0;
+			      run_t.gTimer_3s=0;
               }
            
 	           
-           if(run_t.gTimer_key_2s >1){  //Mode key be pressed long 
+           if(run_t.gTimer_3s >3){  //Mode key be pressed long 
                run_t.gKeyLong =1;
-              // run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
-                 run_t.gTimer_key_5s=0;
+                run_t.gTimer_key_5s=0;
                 run_t.gKeyValue++ ;
 			   keyMode=0;
-			   run_t.gTimer_key_2s=0;
+			   run_t.gTimer_3s=0;
 			   run_t.gRun_flag= RUN_SIG ;
+			 
            } 
-           else if(run_t.gKeyLong ==0 && sig != 0x40){ //shot be pressed 
-                
-
-			   run_t.gKey_long_flag=1;
-		      
-			   keyMode=0;
+           else if(run_t.gKeyLong ==0){ //shot be pressed 
+               run_t.gKey_display_timer=1;
                run_t.gKeyValue++ ;
 			   run_t.gRun_flag= RUN_SIG ;
+			
            }
 
 		break;
@@ -276,7 +273,7 @@ void RunCommand_Mode(uint8_t sig)
 **********************************************************************/
 void RunCommand_Order(void)
 {
-   static uint8_t po,m,n;
+   static uint8_t po,m,n,i;
 	switch(run_t.gRun_flag){
 
       case IDEL_SIG :
@@ -345,38 +342,34 @@ void RunCommand_Order(void)
 
 		}
 
-		if( run_t.gTimer_300ms==1){
+		if( run_t.gTimer_30ms==1){
 
-			run_t.gTimer_300ms=0;
-			if(run_t.gKeyLong ==1){
+			run_t.gTimer_30ms=0;
+			if(run_t.gKeyLong ==1 || run_t.gKey_display_timer==1){  //gkey_
 				
-
-				m = (run_t.gTimes_hours /10) %10;
-				n=  (run_t.gTimes_hours %10);
+               run_t.gKey_display_timer=0;
+               if(run_t.gKey_display_timer !=1){
+					m = (run_t.gTimes_hours /10) %10;
+					n=  (run_t.gTimes_hours %10);
+               	}
 				TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-				if(run_t.gTimer_400ms==1){
-					run_t.gTimer_400ms=0;
-
-					 TM1640_Write_4Bit_Data(0,0,m,n,2) ; //timer is default 12 hours "H0:12"
-
-				}
-				TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
-				
+				HAL_Delay(100);
+                if(run_t.gKeyLong ==1){
+					
+                   
+						TM1640_Write_4Bit_Data(0,0,m,n,2) ; //timer is default 12 hours "H0:12"
+		                HAL_Delay(100);
+						TM1640_Write_4Bit_Data(0,0,m,n,1) ; 
+						HAL_Delay(100);
+                    
+					
+                }
 
 		     }
 		   else{ 
 				run_t.gTimer_300ms=0;
 
 
-			   if(run_t.gKey_long_flag==1){
-					 run_t.gKey_long_flag=0;
-
-                     m = (run_t.gTimes_hours /10) %10;
-				     n=  (run_t.gTimes_hours %10);
-				     TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-
-               }
-			   else{
 				if(run_t.gSig==0){
 					run_t.gSig ++;
 					run_t.gTimes_hours_temp =12;
@@ -386,10 +379,10 @@ void RunCommand_Order(void)
 				n=  (run_t.gTimes_hours_temp %10);
 				TM1640_Write_4Bit_Data(m,n,0,0,0) ; //timer is default 12 hours "12:00"
 
-				}
-			  }
+			}
+		}
 
-		  }
+		  
 		
 						 
 
@@ -397,10 +390,9 @@ void RunCommand_Order(void)
 			run_t.gTimer_1s =0;
 			Display_DHT11_Value(&DHT11);
 		}
-		if(run_t.gTimer_key_5s >10){
-              run_t.gTimer_key_5s=11;
-              run_t.gKeyLong =0;
-					 
+		if(run_t.gTimer_key_5s >10 &&  run_t.gKeyLong ==1){
+          
+			   run_t.gKeyLong =0;		 
 		}
 
 		
