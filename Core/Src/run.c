@@ -85,6 +85,10 @@ void RunCommand_Mode(uint8_t sig)
 				 run_t.gRun_flag= IDEL_SIG ;
 			 	run_t.gPower_On =0;
 				run_t.gPower_On =0;
+				 run_t.gFan=0;
+				 run_t.gPlasma=0;
+				 run_t.gDry=0;
+				 run_t.gAi_Led =0;
             
              }
          break;
@@ -325,7 +329,7 @@ void RunCommand_Order(void)
 			 	po++;
 			 	Smg_AllOff();
 	  	 	}
-         
+          
            Breath_Led();
 		   run_t.gKeyLong = 0;
           run_t.gKeyValue++;
