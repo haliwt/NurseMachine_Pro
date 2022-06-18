@@ -415,7 +415,7 @@ void RunCommand_Order(void)
 
 		     }
 		   else{ 
-				run_t.gTimer_300ms=0;
+				run_t.gTimer_10ms=0;
 
 
 				if(run_t.gSig==0){
