@@ -52,7 +52,7 @@ void CProcessRun_Init(void)
 **********************************************************************/
 void RunCommand_Mode(uint8_t sig)
 {
-     static uint8_t powerflag ,beepflag=0xff,keyMode,multf=0,aiflg;
+     static uint8_t powerflag ,beepflag=0xff,keyMode;
 	 static uint8_t fanflag,plasmaflag,dryflag,aiflag;
 
     if(sig!=0){
@@ -192,19 +192,8 @@ void RunCommand_Mode(uint8_t sig)
                if(run_t.gPower_On ==1){
                   keyMode=0;
 			    
-			      fanflag++;
-			      if(fanflag==1){
-				  	 if(run_t.gAi ==1){
-					   run_t.gFan =0;
-
-					 }
-					 else
-                        run_t.gFan =1;
-				  }
-				  else{
-                     run_t.gFan =0;
-					 fanflag =0;
-				  }
+			    run_t.gFan =run_t.gFan^ 0x01;
+			     
 				
 			   	 run_t.gRun_flag= RUN_SIG ;
                 
@@ -218,16 +207,12 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 				keyMode=0;
 
-			    plasmaflag ++;
+			    plasmaflag =plasmaflag ^ 0x01;
 				if(plasmaflag ==1){
-					if(run_t.gAi ==1){ //OFF
-                      run_t.gPlasma =0;//On
-					}
-					else
-                        run_t.gPlasma =1;
+					run_t.gPlasma =1;
 				}
 				else{
-					plasmaflag = 0;
+				
 					run_t.gPlasma =0;
 				}
                  
@@ -242,18 +227,12 @@ void RunCommand_Mode(uint8_t sig)
                if(run_t.gPower_On ==1){
 				   keyMode=0;
 
-			       dryflag = dryflag ^ 0x01;
-				   if(dryflag == 1){
-				   	    if(run_t.gAi ==1){ //OFF
-				   	       run_t.gDry =0; //turn on 
-				   	    }
-						else
-						run_t.gDry =1; //turn off 
-				   }
-				   else
-				   	   run_t.gDry =0; //turn on
-                 
-                    run_t.gRun_flag= RUN_SIG ;
+			      run_t.gDry = run_t.gDry^ 0x01;
+			      if(run_t.gDry ==0){
+                      run_t.gFan =0;
+				  }
+				  
+                  run_t.gRun_flag= RUN_SIG ;
              }
            
              
@@ -266,28 +245,26 @@ void RunCommand_Mode(uint8_t sig)
 				  aiflag = aiflag ^ 0x01;
 				   if(aiflag ==1){
  					   run_t.gAi=1;
-					 if(aiflg == 0){
-						 aiflg ++;
-					     run_t.gFan=1;
-						 run_t.gPlasma=1;
-						 run_t.gDry=1;
-						 run_t.gAi_Led =1;
-						 multf =0;
-					 }
-			 
+					   run_t.gAi_Led =0;
+			
+					   run_t.gFan=1;
+					   run_t.gPlasma=1;
+						run_t.gDry=1;
+						run_t.gAi_Led =1; //
+						run_t.gAi_fun = 0; //AI functin ON
+				
 
                  }
-                   else{
+                   else{ //AI ON 
 					  run_t.gAi=0;
-
-					if(multf == 0){
-
-		                 multf ++ ;
+					  run_t.gAi_Led =0;
+                      run_t.gAi_fun =0; //AI Function ON
+			
 						 run_t.gFan=0;
 						 run_t.gPlasma=0;
 						 run_t.gDry=0;
 						 run_t.gAi_Led =0;
-						 aiflg =0;
+					
 
 
 			         }
@@ -296,7 +273,7 @@ void RunCommand_Mode(uint8_t sig)
                    	}
                    run_t.gRun_flag= RUN_SIG ;
              
-             }
+       
           
          break;
              
@@ -346,42 +323,7 @@ void RunCommand_Order(void)
 			run_t.gTimer_500ms = 0;
 			KeyLed_Power_On();
 		
-		   if(run_t.gFan==0){ //0 -ON
-				FAN_CCW_RUN();
-			}
-			else{ //1-OFF
-				
-				run_t.gAi_Led =1;
-				PTC_SetLow(); //PTC turn off 
-				FAN_Stop();
-			   
-			}
-
-			if(run_t.gPlasma==0){ //0 -ON
-				PLASMA_SetHigh();
-				HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
-			}
-			else{ //1 -OFF
-			     run_t.gAi_Led =1;
-				PLASMA_SetLow();
-				HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic off
-				
-			}
-
-
-			if(run_t.gDry==0){
-			   FAN_CCW_RUN();
-			   PTC_SetHigh();
-				
-			}
-		   else{
-		   	    run_t.gAi_Led =1;
-				PTC_SetLow();
-			}
-		   
-	   
-	   
-		AI_Function_OnOff();
+	        AI_Function_OnOff();
 	  }
 	   
       if( run_t.gTimer_15ms==1){
