@@ -25,6 +25,8 @@ typedef struct _RUN_T{
    uint8_t gSig;
    uint8_t gPower_On;
    uint8_t gRun_flag;
+   uint8_t gKeyPresse ;
+   uint8_t gKeyMode;
    
 
    uint8_t gKey_display_timer;
@@ -44,11 +46,12 @@ typedef struct _RUN_T{
    uint8_t  gTimer_3s;
     uint8_t  gTimer_4s;
 	
-   uint8_t  gTimer_key_2s;
+   uint8_t  gTimer_2s;
    uint8_t  gTimer_key_5s;
  
    uint8_t  gKeyLong;
    uint8_t  gTimer_flag;
+   uint8_t  gTimer_TotalTimes;
    
    uint8_t  gTimer_Cmd;
    uint8_t  gFan;
@@ -58,9 +61,11 @@ typedef struct _RUN_T{
    uint8_t  gAi;
    uint8_t  gAi_Led;
    uint8_t  gAi_fun;
+   uint8_t  gTimes_minutes_temp;
    int8_t   gTimes_minutes;
    int8_t   gTimes_hours;
    int8_t 	gTimes_hours_temp;
+  
   
   
 

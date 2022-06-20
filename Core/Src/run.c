@@ -56,7 +56,7 @@ void CProcessRun_Init(void)
 **********************************************************************/
 void RunCommand_Mode(uint8_t sig)
 {
-     static uint8_t powerflag ,beepflag=0xff,keyMode;
+     static uint8_t powerflag ,beepflag=0xff;
 	 static uint8_t aiflag;
 
     if(sig!=0){
@@ -78,11 +78,13 @@ void RunCommand_Mode(uint8_t sig)
              if(powerflag == 1){
 			 	run_t.gRun_flag= RUN_SIG ;
 			 	run_t.gPower_On =1;
+			    HAL_TIM_Base_Start_IT(&htim3);
+				 run_t.gKeyPresse =0;
              }
              else{
                  Smg_AllOff();
 				 run_t.gRun_flag= IDEL_SIG ;
-				
+				 run_t.gPower_On =0;
             
              }
          break;
@@ -90,8 +92,8 @@ void RunCommand_Mode(uint8_t sig)
          case 0x40: //CIN1 -> MODE KEY
              if(run_t.gPower_On ==1){
 			 	 
-              if(keyMode ==0){
-			  	  keyMode ++;
+              if(run_t.gKeyMode ==0){
+			  	  run_t.gKeyMode  ++;
 			      run_t.gTimer_3s=0;
               }
            
@@ -100,7 +102,7 @@ void RunCommand_Mode(uint8_t sig)
                run_t.gKeyLong =1;
                 run_t.gTimer_key_5s=0;
                 run_t.gKeyValue++ ;
-			   keyMode=0;
+			    run_t.gKeyMode=0;
 			   run_t.gTimer_3s=0;
 			   run_t.gRun_flag= RUN_SIG ;
 			 
@@ -117,7 +119,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x20: //CIN2 ->ADD KEY
              if(run_t.gPower_On ==1){
 
-					 keyMode=0;
+					run_t.gKeyMode=0;
 				 if( run_t.gKeyLong ==1){
 
 					 run_t.gTimer_key_5s=0;// run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
@@ -151,7 +153,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x10: //CIN3 -> DEC KEY
              if(run_t.gPower_On ==1){
-			 	 keyMode=0;
+			 	  run_t.gKeyMode=0;
 			 	  if( run_t.gKeyLong ==1){
                       run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
               
@@ -184,7 +186,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x08: //CIN4 -> FAN KEY 
                if(run_t.gPower_On ==1){
-                  keyMode=0;
+                   run_t.gKeyMode=0;
 			    
 			    run_t.gFan =run_t.gFan^ 0x01;
 			     
@@ -199,7 +201,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x04: //CIN5  -> STERILIZATION KEY 
              if(run_t.gPower_On ==1){
-				keyMode=0;
+				 run_t.gKeyMode=0;
 
 			   run_t.gPlasma =run_t.gPlasma ^ 0x01;
 				
@@ -212,7 +214,7 @@ void RunCommand_Mode(uint8_t sig)
          
          case 0x02: //CIN6  ->DRY KEY 
                if(run_t.gPower_On ==1){
-				   keyMode=0;
+				  run_t.gKeyMode=0;
 
 			      run_t.gDry = run_t.gDry^ 0x01;
 			      if(run_t.gDry ==0){
@@ -228,7 +230,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x01: //CIN7 -> AI KEY
              if(run_t.gPower_On ==1){
 
-			      keyMode=0;
+			       run_t.gKeyMode=0;
 				  aiflag = aiflag ^ 0x01;
 				   if(aiflag ==1){
  					   run_t.gAi=1;
@@ -280,22 +282,31 @@ void RunCommand_Mode(uint8_t sig)
 **********************************************************************/
 void RunCommand_Order(void)
 {
-  
+   
 	switch(run_t.gRun_flag){
 
       case IDEL_SIG :
-	  	 if(run_t.gPower_Cmd==0){
-			   run_t.gPower_Cmd++;
+	  	 if(run_t.gPower_Cmd==0 || run_t.gPower_On ==0){
+
+			  if(run_t.gPower_Cmd == 0){
+			  	run_t.gPower_Cmd =0XFF;
 			 	Smg_AllOff();
+		        HAL_TIM_Base_Stop_IT(&htim3);
+
+			  	}
+			  
+			   
 	  	 	}
-		 
+		   run_t.gKeyPresse =1;
+		   run_t.gTimes_hours=0;
+		   run_t.gTimes_minutes=0;
+	
           
            Breath_Led();
 		   run_t.gKeyLong = 0;
            run_t.gKeyValue++;
 		  
-			 	 run_t.gPower_On =0;
-				 run_t.gPower_On =0;
+				 //run_t.gPower_On =0;
 				 run_t.gFan=0;
 				 run_t.gPlasma=0;
 				 run_t.gDry=0;
@@ -308,7 +319,7 @@ void RunCommand_Order(void)
 	  case  RUN_SIG: //1
 		 run_t.gKeyValue++;
 		
-		if(run_t.gTimer_500ms ==1){
+	   if(run_t.gTimer_500ms ==1){
 		
 			run_t.gTimer_500ms = 0;
 			KeyLed_Power_On();
@@ -324,9 +335,12 @@ void RunCommand_Order(void)
      Timer_Handle();
 		
 		
-		if(run_t.gTimer_key_2s==1){//1s read one data
-			run_t.gTimer_1s =0;
+		if(run_t.gTimer_4s==1){//1s read one data
+			run_t.gTimer_4s =0;
+			run_t.gKeyMode=0;
 			Display_DHT11_Value(&DHT11);
+		
+		    
 		}
 		
 		
@@ -364,7 +378,28 @@ static void Timer_Handle(void)
 			m = (run_t.gTimes_hours /10) ;
 			n=	(run_t.gTimes_hours %10);
 		}
-		TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
+	   //display of timer of times but don't edit timer of times,shot times key
+	    if(run_t.gTimer_Cmd==1 && run_t.gKey_display_timer==1){
+			if(run_t.gTimes_minutes >0){
+                 if(run_t.gTimes_hours ==0){
+				 	m=0;
+				 	n = 0x01;
+
+				 }
+				 else{
+                    m = ((run_t.gTimes_hours + 1)/10) ;
+			        n=	((run_t.gTimes_hours+1) %10);
+					
+                    
+				 }
+ 
+			}
+			
+		   }
+		
+			
+	   TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
+		
 		if(run_t.gKeyLong ==1){
 			
 			 
@@ -385,9 +420,9 @@ static void Timer_Handle(void)
 	}
 	else{ //normal display times 
 			run_t.gTimer_10ms=0;
+                if(run_t.gTimer_Cmd==1){
 
-	        if(run_t.gTimer_Cmd==1){
-
+                
 				m = (run_t.gTimes_hours /10) ;
 			    n=	(run_t.gTimes_hours %10); 
 				p = (run_t.gTimes_minutes /10);
@@ -396,20 +431,21 @@ static void Timer_Handle(void)
 
 			}
 			else{
-			if(run_t.gSig==0){
-				run_t.gSig ++;
-				run_t.gTimes_hours_temp =12;
-				run_t.gTimes_minutes=0;
-			}
-			m = (run_t.gTimes_hours_temp /10);
-			n=	(run_t.gTimes_hours_temp %10);
-			p = (run_t.gTimes_minutes /10);
-			q=  (run_t.gTimes_minutes %10);
+				if(run_t.gSig==0){
+					run_t.gSig ++;
+					run_t.gTimes_hours_temp =12;
+					run_t.gTimes_minutes_temp=0;
+				}
+				m = (run_t.gTimes_hours_temp /10);
+				n=	(run_t.gTimes_hours_temp %10);
+				p = (run_t.gTimes_minutes_temp /10);
+				q=  (run_t.gTimes_minutes_temp %10);
 			
 
 		    }
 
 		  TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
+		 
 		}
 	}
 
@@ -420,6 +456,7 @@ static void Timer_Handle(void)
 		      run_t.gTimer_Cmd=1;	  //timer is times start  
 		      run_t.gTimes_minutes =0;
 		      run_t.gTimer_flag=0;
+			  
 		 }
 		 else{
 		    run_t.gTimer_Cmd=0;

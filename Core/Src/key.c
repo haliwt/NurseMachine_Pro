@@ -200,7 +200,7 @@ uint8_t I2C_Receive8Bit(void)
 *********************************************************************************************/
 uint8_t I2C_SimpleRead_From_Device(uint8_t *dat8)
 {
-    uint8_t buf1,buf2;
+    uint8_t buf1;
     
    I2C_Start();
    if(Send_OneByte_Ack(SC12B_ADDR << 1)| 0x01){
@@ -212,7 +212,7 @@ uint8_t I2C_SimpleRead_From_Device(uint8_t *dat8)
    buf1 = I2C_Receive8Bit(); //reg address = 0x08
    I2C_Respond(0); //acknowledge
    
-   buf2 = I2C_Receive8Bit(); //reg address = 0x09
+    I2C_Receive8Bit(); //reg address = 0x09
    I2C_Respond(1); //don't ack
    
    I2C_Stop();

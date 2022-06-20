@@ -108,7 +108,7 @@ int main(void)
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
         
-       if(run_t.gTimer_5ms ==1){
+       if(run_t.gTimer_5ms ==1 || run_t.gKeyPresse ==1){
 	   	run_t.gTimer_5ms=0;
         I2C_Read_From_Device(SC12B_ADDR,0x08,&ReadKeyValue,1);
 	    RunCommand_Mode(ReadKeyValue);

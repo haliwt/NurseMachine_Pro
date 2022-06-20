@@ -308,7 +308,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     static uint8_t temp,t2,t3,t4,t5,t6,t7,t8,t9,t10;
-	static uint8_t tm2,tm3,tm1,tm4,tm5,tf;
+	static uint8_t tm2,tm3,tm1,tm4,tm5,tm6,tf;
     
     if(htim->Instance==TIM3){
        temp ++ ;
@@ -377,7 +377,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
               t3=0;
               t4++;
 		      t7++;
-			  if(t7==4)run_t.gTimer_4s=1;
+			 if(t7==4){
+			 	t7=0;
+			 	run_t.gTimer_4s=1;
+			 }
+
+			 
              run_t.gTimer_1s =1;
              run_t.gTimer_3s ++;
              run_t.gTimer_key_5s ++;
@@ -386,7 +391,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
              
               if(t4==2){
                 t4= 0;
-                run_t.gTimer_key_2s =1 ;
+                run_t.gTimer_2s =1 ;
               }
              
               if(run_t.gTimer_Cmd ==1){//1s
@@ -407,7 +412,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						  }
 
 						 if(run_t.gTimer_flag==0){
-						     run_t.gTimes_hours=run_t.gTimes_hours  -- ;
+						 	run_t.gTimer_flag ++;
+						     run_t.gTimes_hours -- ;
 						     run_t.gTimes_minutes=59;
 
 							 
@@ -423,7 +429,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 							}
 
 						  	 tf = 1;
-							 run_t.gTimer_flag ++;
+							 
 						  }
 						  
 
@@ -444,6 +450,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                      
 
                    }
+			       else {
+						
+                       tm6++;
+					   if(tm6==60){ //60s 1 muintes
+
+					       tm6=0;
+						   run_t.gTimes_minutes_temp ++;
+					       if(run_t.gTimes_minutes_temp ==60){ //1 hour
+					             run_t.gTimes_minutes_temp =0;
+                                 run_t.gTimes_hours_temp ++;
+								 if(run_t.gTimes_hours_temp > 24){
+								     run_t.gTimes_hours_temp =0;
+								     run_t.gTimes_minutes_temp =0;
+								}
+
+						   }
+
+
+                       }
+
+
+				   }
                  
               }//end 1s over
 
