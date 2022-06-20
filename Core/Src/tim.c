@@ -422,7 +422,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 							 run_t.gTimes_hours =0;
 							 run_t.gTimes_minutes=0;
 							 run_t.gTimer_Cmd =0;	 //shut off timer of times
-							 run_t.gPower_Cmd=0;
 							 run_t.gPower_On=0;
 							 run_t.gRun_flag= IDEL_SIG ;
 							 run_t.gTimer_flag=0;

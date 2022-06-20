@@ -135,6 +135,7 @@ void RunCommand_Mode(uint8_t sig)
 				 else{
 
                      run_t.gTimer_adtem=1;
+					   run_t.gKey_display_timer=0;//don't input timer of times edit funciton
 				     if(run_t.gSig==0){
 						run_t.gSig ++;
 						run_t.gTimes_hours_temp =12;
@@ -169,6 +170,7 @@ void RunCommand_Mode(uint8_t sig)
 				 else{
                       
                      run_t.gTimer_adtem=1;
+					 run_t.gKey_display_timer=0;
 					 if(run_t.gSig==0){
 						run_t.gSig ++;
 						run_t.gTimes_hours_temp =12;
@@ -289,32 +291,41 @@ void RunCommand_Order(void)
 	switch(run_t.gRun_flag){
 
       case IDEL_SIG :
-	  	 if(run_t.gPower_Cmd==0 || run_t.gPower_On ==0){
+	  	 if(run_t.gPower_On ==0){
 
-			  if(run_t.gPower_Cmd == 0){
-			  	run_t.gPower_Cmd =0XFF;
+			  
+			  	 run_t.gPower_On=0XFF;
 			 	Smg_AllOff();
 		        HAL_TIM_Base_Stop_IT(&htim3);
-
-			  	}
-			  
-			   
-	  	 	}
-		   run_t.gKeyPresse =1;
-		   run_t.gTimes_hours=0;
-		   run_t.gTimes_minutes=0;
-	
-          
-           Breath_Led();
-		   run_t.gKeyLong = 0;
-           run_t.gKeyValue++;
+				   run_t.gKeyLong = 0;
+                  run_t.gKeyValue++;
 		  
 				 //run_t.gPower_On =0;
 				 run_t.gFan=0;
 				 run_t.gPlasma=0;
 				 run_t.gDry=0;
 				 run_t.gAi_Led =0;
-		   ShutDown_AllFunction();
+				 run_t.gKeyPresse =1;
+
+				  run_t.gTimer_Cmd=0; //timer of command "1"->timer is start
+				  run_t.gTimes_hours=0;
+				  run_t.gTimes_minutes=0;
+				  run_t.gSig=0;
+				  run_t.gKeyLong =0;
+				  run_t.gKey_display_timer=0;
+				  run_t.gTimer_adtem =0;
+				  ShutDown_AllFunction();
+                  
+			  	
+			  
+			   
+	  	 	}
+		
+	       run_t.gKeyPresse =1;
+          
+           Breath_Led();
+		
+		 
 
 
 	  break;
@@ -378,7 +389,7 @@ static void Timer_Handle(void)
 	if(run_t.gKeyLong ==1 || run_t.gKey_display_timer==1){	//gkey_
 		
 
-	   if(run_t.gKey_display_timer !=1){
+	   if(run_t.gKey_display_timer ==1 || run_t.gKeyLong ==1 ){
 			m = (run_t.gTimes_hours /10) ;
 			n=	(run_t.gTimes_hours %10);
 		}

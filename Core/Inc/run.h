@@ -20,7 +20,6 @@ struct CProcess1 {
 
 typedef struct _RUN_T{
 
-   uint8_t gPower_Cmd;
    uint8_t gKeyValue;   
    uint8_t gSig;
    uint8_t gPower_On;
