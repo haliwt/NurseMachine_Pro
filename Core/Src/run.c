@@ -95,7 +95,7 @@ void RunCommand_Mode(uint8_t sig)
              
 			  	if(run_t.gKeyMode ==0){
 				   run_t.gKeyMode++;
-
+				   run_t.gTimer_4s=0;
                    run_t.gTimer_3s=0;
 				}
 			    
@@ -125,7 +125,7 @@ void RunCommand_Mode(uint8_t sig)
 				 if( run_t.gKeyLong ==1){
 
 					 run_t.gTimer_key_5s=0;// run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
-					
+					 run_t.gTimer_adtem=0;
 					run_t.gTimes_hours++;
 				    if(run_t.gTimes_hours >24){
 						run_t.gTimes_hours=0;
@@ -134,7 +134,7 @@ void RunCommand_Mode(uint8_t sig)
 				 }
 				 else{
 
-
+                     run_t.gTimer_adtem=1;
 				     if(run_t.gSig==0){
 						run_t.gSig ++;
 						run_t.gTimes_hours_temp =12;
@@ -167,8 +167,9 @@ void RunCommand_Mode(uint8_t sig)
 
 				 }
 				 else{
-
-                     if(run_t.gSig==0){
+                      
+                     run_t.gTimer_adtem=1;
+					 if(run_t.gSig==0){
 						run_t.gSig ++;
 						run_t.gTimes_hours_temp =12;
 
@@ -422,8 +423,8 @@ static void Timer_Handle(void)
 
 	}
 	else{ //normal display times 
-			run_t.gTimer_10ms=0;
-                if(run_t.gTimer_Cmd==1){
+			   run_t.gTimer_10ms=0;
+                if(run_t.gTimer_Cmd==1 && run_t.gTimer_adtem !=1){
 
                 
 				m = (run_t.gTimes_hours /10) ;
@@ -434,6 +435,7 @@ static void Timer_Handle(void)
 
 			}
 			else{
+				run_t.gTimer_adtem =0;
 				if(run_t.gSig==0){
 					run_t.gSig ++;
 					run_t.gTimes_hours_temp =12;
@@ -443,7 +445,7 @@ static void Timer_Handle(void)
 				n=	(run_t.gTimes_hours_temp %10);
 				p = (run_t.gTimes_minutes_temp /10);
 				q=  (run_t.gTimes_minutes_temp %10);
-			
+			    
 
 		    }
 
