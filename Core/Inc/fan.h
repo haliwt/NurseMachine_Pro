@@ -41,5 +41,7 @@ void FAN_Stop(void);
 void AI_Function_OnOff(void);
 
 void Buzzer_On(void);
+void ShutDown_AllFunction(void);
+
 
 #endif 

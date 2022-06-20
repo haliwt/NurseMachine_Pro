@@ -98,3 +98,15 @@ void Buzzer_On(void)
 
 }
 
+void ShutDown_AllFunction(void)
+{
+	
+	PLASMA_SetLow(); //
+	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 
+	PTC_SetLow();
+	FAN_Stop();
+
+
+
+}
+

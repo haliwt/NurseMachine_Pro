@@ -53,7 +53,7 @@ void CProcessRun_Init(void)
 void RunCommand_Mode(uint8_t sig)
 {
      static uint8_t powerflag ,beepflag=0xff,keyMode;
-	 static uint8_t fanflag,plasmaflag,dryflag,aiflag;
+	 static uint8_t aiflag;
 
     if(sig!=0){
 		 if(beepflag !=run_t.gKeyValue){
@@ -62,18 +62,12 @@ void RunCommand_Mode(uint8_t sig)
 			
 		 }
      }
+	 else{
+         return ;
+
+	 }
        switch(sig){
-
-	    case 0:
-
-	         if(run_t.gPower_On !=1){
-                  
-                  run_t.gRun_flag= IDEL_SIG ;
-
-
-			 }
-
-	    break;
+	   	
         case 0x80: //CIN0 -> POWER KEY 
              powerflag = powerflag ^ 0x01;
              if(powerflag == 1){
@@ -207,16 +201,9 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 				keyMode=0;
 
-			    plasmaflag =plasmaflag ^ 0x01;
-				if(plasmaflag ==1){
-					run_t.gPlasma =1;
-				}
-				else{
+			   run_t.gPlasma =run_t.gPlasma ^ 0x01;
 				
-					run_t.gPlasma =0;
-				}
-                 
-                run_t.gRun_flag= RUN_SIG ;
+               run_t.gRun_flag= RUN_SIG ;
              
              }
             
@@ -265,17 +252,12 @@ void RunCommand_Mode(uint8_t sig)
 						 run_t.gDry=0;
 						 run_t.gAi_Led =0;
 					
+						}
+                      run_t.gRun_flag= RUN_SIG ;
 
-
-			         }
-                      
-
-                   	}
-                   run_t.gRun_flag= RUN_SIG ;
-             
-       
-          
-         break;
+             }
+                  
+          break;
              
          default:
              
@@ -306,7 +288,7 @@ void RunCommand_Order(void)
 			 	po++;
 			 	Smg_AllOff();
 	  	 	}
-          
+          ShutDown_AllFunction();
            Breath_Led();
 		   run_t.gKeyLong = 0;
           run_t.gKeyValue++;
