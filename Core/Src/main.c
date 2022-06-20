@@ -35,7 +35,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+ uint8_t   ReadKeyValue;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -71,7 +71,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-      uint8_t   ReadKeyValue;
+     
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -108,8 +108,8 @@ int main(void)
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
         
-       if(run_t.gTimer_5ms ==1 || run_t.gKeyPresse ==1){
-	   	run_t.gTimer_5ms=0;
+       if(run_t.gTimer_50ms ==1 || run_t.gKeyPresse ==0){
+	   	run_t.gTimer_50ms=0;
         I2C_Read_From_Device(SC12B_ADDR,0x08,&ReadKeyValue,1);
 	    RunCommand_Mode(ReadKeyValue);
        }

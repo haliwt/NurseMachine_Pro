@@ -79,7 +79,7 @@ void RunCommand_Mode(uint8_t sig)
 			 	run_t.gRun_flag= RUN_SIG ;
 			 	run_t.gPower_On =1;
 			    HAL_TIM_Base_Start_IT(&htim3);
-				 run_t.gKeyPresse =0;
+				 run_t.gKeyPresse =1;
              }
              else{
                  Smg_AllOff();
@@ -305,7 +305,7 @@ void RunCommand_Order(void)
 				 run_t.gPlasma=0;
 				 run_t.gDry=0;
 				 run_t.gAi_Led =0;
-				 run_t.gKeyPresse =1;
+				 run_t.gKeyPresse =0;
 
 				  run_t.gTimer_Cmd=0; //timer of command "1"->timer is start
 				  run_t.gTimes_hours=0;
@@ -322,7 +322,7 @@ void RunCommand_Order(void)
 			   
 	  	 	}
 		
-	       run_t.gKeyPresse =1;
+	       run_t.gKeyPresse =0;
           
            Breath_Led();
 		
@@ -342,8 +342,8 @@ void RunCommand_Order(void)
 	        AI_Function_OnOff();
 	  }
 	   
-      if( run_t.gTimer_15ms==1){
-	  	 run_t.gTimer_15ms=0;
+      if( run_t.gTimer_60ms==1){
+	  	 run_t.gTimer_60ms=0;
 	     Display_Function_OnOff();
       }
 	
@@ -385,9 +385,9 @@ static void Timer_Handle(void)
 {
      static uint8_t m,n,p,q;
 	//mode key long be pressed handle
-	if( run_t.gTimer_10ms==1 || run_t.gKeyLong ==1){
+	if( run_t.gTimer_30ms==1 || run_t.gKeyLong ==1){
 
-	run_t.gTimer_10ms=0;
+	run_t.gTimer_30ms=0;
 	if(run_t.gKeyLong ==1 || run_t.gKey_display_timer==1){	//gkey_
 		
 
@@ -432,11 +432,10 @@ static void Timer_Handle(void)
 			
 		}
 		run_t.gKey_display_timer=0;//display Timers of hours but don't edit hours numbers
-		run_t.gTimer_10ms=0;
 
 	}
 	else{ //normal display times 
-			   run_t.gTimer_10ms=0;
+			   run_t.gTimer_30ms=0;
                 if(run_t.gTimer_Cmd==1 && run_t.gTimer_adtem !=1){
 
                 
