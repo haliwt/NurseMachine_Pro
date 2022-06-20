@@ -92,13 +92,15 @@ void RunCommand_Mode(uint8_t sig)
          case 0x40: //CIN1 -> MODE KEY
              if(run_t.gPower_On ==1){
 			 	 
-              if(run_t.gKeyMode ==0){
-			  	  run_t.gKeyMode  ++;
-			      run_t.gTimer_3s=0;
-              }
-           
-	           
-           if(run_t.gTimer_3s >2){  //Mode key be pressed long 
+             
+			  	if(run_t.gKeyMode ==0){
+				   run_t.gKeyMode++;
+
+                   run_t.gTimer_3s=0;
+				}
+			    
+              
+           if(run_t.gTimer_3s  >1){  //Mode key be pressed long 
                run_t.gKeyLong =1;
                 run_t.gTimer_key_5s=0;
                 run_t.gKeyValue++ ;
@@ -337,7 +339,8 @@ void RunCommand_Order(void)
 		
 		if(run_t.gTimer_4s==1){//1s read one data
 			run_t.gTimer_4s =0;
-			run_t.gKeyMode=0;
+			run_t.gTimer_3s=0;
+			run_t.gKeyMode =0;
 			Display_DHT11_Value(&DHT11);
 		
 		    
