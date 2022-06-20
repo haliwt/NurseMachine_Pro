@@ -314,6 +314,7 @@ void RunCommand_Order(void)
 				  run_t.gKeyLong =0;
 				  run_t.gKey_display_timer=0;
 				  run_t.gTimer_adtem =0;
+				  run_t.gDht11_flag=0; //the first power on display "00"
 				  ShutDown_AllFunction();
                   
 			  	
@@ -349,7 +350,8 @@ void RunCommand_Order(void)
      Timer_Handle();
 		
 		
-		if(run_t.gTimer_4s==1){//1s read one data
+		if(run_t.gTimer_4s==1 || run_t.gDht11_flag ==0 ){//1s read one data
+		
 			run_t.gTimer_4s =0;
 			run_t.gTimer_3s=0;
 			run_t.gKeyMode =0;

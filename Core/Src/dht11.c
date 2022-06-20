@@ -1,5 +1,6 @@
 #include "dht11.h"
 #include "smg.h"
+#include "run.h"
 
 static void DHT11_Mode_IPU(void);
 static void DHT11_Mode_Out_PP(void);
@@ -184,7 +185,16 @@ void Display_DHT11_Value(DHT11_Data_TypeDef *DHT11)
         
         temp1 = (DHT11->temp_high8bit)/10 %10;
         temp2 = (DHT11->temp_high8bit)%10;
-    
+
+		if(run_t.gDht11_flag ==0){
+             hum1=0;
+			 hum2=0;
+		     temp1=0;
+			 temp2=0;
+			 run_t.gDht11_flag ++;
+
+		}
+        
         TM1640_Write_2bit_TempData(hum1,hum2);
         TM1640_Write_2bit_HumData(temp1,temp2);
     
