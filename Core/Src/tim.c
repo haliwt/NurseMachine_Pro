@@ -307,8 +307,8 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    static uint8_t temp,t2,t3,t4,t5,t6,t7,t8,t9;
-	static uint8_t tm2,tm3,tm1,tm4,tm5;
+    static uint8_t temp,t2,t3,t4,t5,t6,t7,t8,t9,t10;
+	static uint8_t tm2,tm3,tm1,tm4,tm5,tf;
     
     if(htim->Instance==TIM3){
        temp ++ ;
@@ -392,32 +392,68 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
               if(run_t.gTimer_Cmd ==1){//1s
                    t6++;
                    if(t6==60){ //1 minute
-                      run_t.gTimes_minutes ++ ;
-                      if(run_t.gTimes_minutes ==60){ //1 hour
-                          run_t.gTimes_minutes = 0;
-                          run_t.gTimes_hours --;
-                          if(run_t.gTimes_hours < 0 ){
-                             run_t.gPower_Cmd =1;
-                             run_t.gTimes_hours =0;
-                          }
-                      }
+                      t6=0;
+					  t10++;
+				      
+                      if(t10<61){ //timer is times 1 hour
+					  	
+						  
+						  
+						  if(t10==60){
+						  	  t10 = 0 ;
+						  	  run_t.gTimer_flag=0;
+							  run_t.gTimes_minutes=0;
+	                          
+						  }
+
+						 if(run_t.gTimer_flag==0){
+						     run_t.gTimes_hours=run_t.gTimes_hours  -- ;
+						     run_t.gTimes_minutes=59;
+
+							 
+							 if(run_t.gTimes_hours < 0 ){
+													   
+							 run_t.gTimes_hours =0;
+							 run_t.gTimes_minutes=0;
+							 run_t.gTimer_Cmd =0;	 //shut off timer of times
+							 run_t.gPower_Cmd=0;
+							 run_t.gPower_On=0;
+							 run_t.gRun_flag= IDEL_SIG ;
+							 run_t.gTimer_flag=0;
+							}
+
+						  	 tf = 1;
+							 run_t.gTimer_flag ++;
+						  }
+						  
+
+						  if(tf==1){
+							 	  
+						  	     tf++;
+						   }
+						   else{
+
+							    run_t.gTimes_minutes=59 - t10;
+
+						   }
+
+						  }
+                      	} 
+
+					
+                     
 
                    }
-                   run_t.gTime_total_hours -- ;
-                   
-                   if( run_t.gTime_total_hours ==0){
-                     
-                     run_t.gPower_Cmd =1;
-                   }
-              }
+                 
+              }//end 1s over
 
 
           }
        }
        
     
-    }
+}
     
    
-}
+
 /* USER CODE END 1 */
