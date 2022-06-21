@@ -102,14 +102,15 @@ int main(void)
   //  HAL_TIM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
   /* Infinite loop */
+   run_t.gRun_flag= IDEL_SIG ;
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
         
-       if(run_t.gTimer_50ms ==1 || run_t.gKeyPresse ==0){
-	   	run_t.gTimer_50ms=0;
+       if(run_t.gTimer_20ms ==1){
+	   	run_t.gTimer_20ms=0;
         I2C_Read_From_Device(SC12B_ADDR,0x08,&ReadKeyValue,1);
 	    RunCommand_Mode(ReadKeyValue);
        }

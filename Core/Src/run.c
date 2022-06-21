@@ -78,8 +78,7 @@ void RunCommand_Mode(uint8_t sig)
              if(powerflag == 1){
 			 	run_t.gRun_flag= RUN_SIG ;
 			 	run_t.gPower_On =1;
-			    HAL_TIM_Base_Start_IT(&htim3);
-				 run_t.gKeyPresse =1;
+				 
              }
              else{
                  Smg_AllOff();
@@ -93,7 +92,7 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 			 	 
              
-			  	if(run_t.gKeyMode ==0){
+			  	if(run_t.gKeyMode ==0 && run_t.gKeyLong ==0){
 				   run_t.gKeyMode++;
 				   run_t.gTimer_4s=0;
                    run_t.gTimer_3s=0;
@@ -296,7 +295,6 @@ void RunCommand_Order(void)
 			  
 			  	 run_t.gPower_On=0XFF;
 			 	Smg_AllOff();
-		        HAL_TIM_Base_Stop_IT(&htim3);
 				   run_t.gKeyLong = 0;
                   run_t.gKeyValue++;
 		  
@@ -305,7 +303,7 @@ void RunCommand_Order(void)
 				 run_t.gPlasma=0;
 				 run_t.gDry=0;
 				 run_t.gAi_Led =0;
-				 run_t.gKeyPresse =0;
+				
 
 				  run_t.gTimer_Cmd=0; //timer of command "1"->timer is start
 				  run_t.gTimes_hours=0;
@@ -322,7 +320,7 @@ void RunCommand_Order(void)
 			   
 	  	 	}
 		
-	       run_t.gKeyPresse =0;
+	 
           
            Breath_Led();
 		

@@ -24,7 +24,6 @@ typedef struct _RUN_T{
    uint8_t gSig;
    uint8_t gPower_On;
    uint8_t gRun_flag;
-   uint8_t gKeyPresse ;
    uint8_t gKeyMode;
    uint8_t gTimer_adtem;
    uint8_t gDht11_flag;
