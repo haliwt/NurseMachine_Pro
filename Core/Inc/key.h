@@ -8,6 +8,7 @@
 //#define I2C_SDA_IO_IN()      {GPIOB->MODER&=0XFFFF3FFF;GPIOB->MODER|=0<<14;}  //0x00 input mode
 //#define I2C_SDA_IO_OUT()     {GPIOB->MODER&=0XFFFF3FFF;GPIOB->MODER|=1<<14;}   //0x01 output  mode 
 
+#define SPECIAL_APP     1
 
 
 
@@ -24,6 +25,10 @@
 #define EE_IIC_SDA(val)              HAL_GPIO_WritePin(I2C_GPIO, I2C_SDA,val)                    //SDA Êä³ö¸ß»òÕßµÍ 
 
 #define I2C_SDA_ReadData()           HAL_GPIO_ReadPin(I2C_GPIO,I2C_SDA)
+
+
+///////////////////////////Register ADDR////////////////////////////////////////////////////////////////////////////
+#define SenSet0_REG         0x00                //SC12B为对应CIN3 通道灵敏度的设置地址 
 
 
 
@@ -62,6 +67,7 @@ typedef enum
 
 
 
+void ICman_Init_SET(unsigned char SC_ADDR);  //IC->SC12B Initialize funciton
 
 uint8_t I2C_SimpleRead_From_Device(uint8_t *dat8);
 

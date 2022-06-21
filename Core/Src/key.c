@@ -7,7 +7,20 @@ static uint8_t Send_OneByte_Ack(uint8_t dat);
 static void I2C_Respond(uint8_t ack);
 static void I2C_SDA_IO_IN(void) ;
 static void I2C_SDA_IO_OUT(void);
+Complete_Status I2C_Write_To_Device(unsigned char deviceAddr,unsigned char REG,unsigned char*DAT8);
 
+
+
+
+
+/********************************************************************************
+*
+*Function Name: static void I2C_SDA_IO_IN(void) 	
+*Function : setup GPIO direction input or output PORT 
+*
+*
+*
+********************************************************************************/
 static void I2C_SDA_IO_IN(void) 	//PB11配置成输入  
 {  
 	//__HAL_RCC_GPIOB_CLK_ENABLE();//GPIO时钟使能
@@ -190,6 +203,56 @@ uint8_t I2C_Receive8Bit(void)
    return buffer;
 
 }
+/*****************************************************************************
+				* SC系列B版本芯片 写寄存器参数运用函数
+deviceAddr 设置器件地址 REG 设置寄存器地址 DAT8 写入数据内容的地址
+******************************************************************************/
+Complete_Status I2C_Write_To_Device(unsigned char deviceAddr,unsigned char REG,unsigned char*DAT8)
+{
+			I2C_Start();
+			if (Send_OneByte_Ack((deviceAddr<<1) & ~0x01)) {
+					I2C_Stop();
+				return UNDONE;
+			}
+			if (Send_OneByte_Ack(REG)) {
+					I2C_Stop();
+					return UNDONE;
+			}
+			if (Send_OneByte_Ack(*DAT8)) {
+					I2C_Stop();
+					return UNDONE;
+			}
+			I2C_Stop();
+			return DONE;
+}
+
+/*****************************************************************************
+					*SC系列B系列芯片初始化功能函数，如无特殊运用，无需初始化
+					如需对那个型号芯片初始化，只需将对应地址写入即可，
+					对应的设定参数在初始化函数里面修改
+******************************************************************************/
+void ICman_Init_SET(unsigned char SC_ADDR)
+{
+		 unsigned char databuf;
+		 #ifdef SPECIAL_APP		
+		 //灵敏度从低到高 0x04  0 0x15    0x25  0x36  0x47  0x58  0x68  0x79 
+     //               0x8A  0x9B  0xAC  0xBC  0xCD  0xDE  0xEF  0xFF 	
+				databuf = 0xFF;
+				while(I2C_Write_To_Device(SC_ADDR,SenSet0_REG,&databuf) !=DONE);	
+				//databuf = 0x79;
+				//while(I2C_Write_To_Device(SC_ADDR,SenSetCOM_REG,&databuf) !=DONE);	
+			 //////////非必要，不建议修改，不用直接注释掉/////////////////////////////
+			 //databuf = SLPCYC_3R5T | SLOW_TO_SLEEP | NOTHOLD | KVF_50S_CORREC | RTM3;
+			 //while(I2C_Write_To_Device(SC_ADDR,CTRL0_REG,&databuf)!=DONE);	
+				
+				//////////无必要，不建议修改，不用直接注释掉/////////////////////////
+				//databuf =0b1000;
+				//while(I2C_Write_To_Device(SC_ADDR,CTRL1_REG,&databuf)!=DONE);	
+				
+		 #endif
+}
+
+
 /*********************************************************************************************
 *
 *Function Name: uint8_t I2C_SimpleRead_From_Device(uint16_t *dat16)

@@ -87,6 +87,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  ICman_Init_SET(SC12B_ADDR); 
 
   /* USER CODE END SysInit */
 
@@ -96,6 +97,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM14_Init();
   MX_USART1_UART_Init();
+  
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -111,8 +113,8 @@ int main(void)
         
        if(run_t.gTimer_20ms ==1){
 	   	run_t.gTimer_20ms=0;
-        I2C_Read_From_Device(SC12B_ADDR,0x08,&ReadKeyValue,1);
-	    RunCommand_Mode(ReadKeyValue);
+        I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,1);
+	    RunCommand_Mode( ReceiveBuffer[0]);
        }
       
 	   
