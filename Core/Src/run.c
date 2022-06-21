@@ -467,7 +467,7 @@ static void Timer_Handle(void)
 			}
 		    else{
 
-                    if(run_t.gSig==0 || run_t.gSig_flag ==0){ //display normal times don't edit  timer of times 
+                    if((run_t.gSig==0 || run_t.gSig_flag ==0) && run_t.gTimer_Cmd==0){ //display normal times don't edit  timer of times 
 
 						m = (run_t.gTimes_hours_temp /10) ;
 					    n=	(run_t.gTimes_hours_temp%10); 
