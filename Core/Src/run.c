@@ -91,7 +91,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x40: //CIN1 -> MODE KEY
              if(run_t.gPower_On ==1){
 			 	 
-             
+                run_t.gKeyInput_flag=1;
 			  	if(run_t.gKeyMode ==0){
 				   run_t.gKeyMode++;
 				   run_t.gTimer_4s=0;
@@ -121,6 +121,7 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 
 					run_t.gKeyMode=0;
+					run_t.gKeyInput_flag=1;
 				 if( run_t.gKeyLong ==1){
 
 					 run_t.gTimer_key_5s=0;// run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
@@ -156,6 +157,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x10: //CIN3 -> DEC KEY
              if(run_t.gPower_On ==1){
 			 	  run_t.gKeyMode=0;
+				  run_t.gKeyInput_flag=1;
 				  // setup Timer of times 
 			 	  if( run_t.gKeyLong ==1){
                       run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
@@ -190,8 +192,10 @@ void RunCommand_Mode(uint8_t sig)
          case 0x08: //CIN4 -> FAN KEY 
                if(run_t.gPower_On ==1){
                    run_t.gKeyMode=0;
+				   run_t.gKeyInput_flag=1;
 			    
 			    run_t.gFan =run_t.gFan^ 0x01;
+				if(run_t.gFan == 1)run_t.gDry =1;
 			     
 				
 			   	 run_t.gRun_flag= RUN_SIG ;
@@ -205,6 +209,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x04: //CIN5  -> STERILIZATION KEY 
              if(run_t.gPower_On ==1){
 				 run_t.gKeyMode=0;
+			 run_t.gKeyInput_flag=1;
 
 			   run_t.gPlasma =run_t.gPlasma ^ 0x01;
 				
@@ -218,12 +223,10 @@ void RunCommand_Mode(uint8_t sig)
          case 0x02: //CIN6  ->DRY KEY 
                if(run_t.gPower_On ==1){
 				  run_t.gKeyMode=0;
-				  run_t.gDry_priority =1;
+				 run_t.gKeyInput_flag=1;
 
 			      run_t.gDry = run_t.gDry^ 0x01;
-			      if(run_t.gDry ==0){
-                      run_t.gFan =0;
-				  }
+			      if(run_t.gDry == 0)run_t.gFan =0;
 				  
                   run_t.gRun_flag= RUN_SIG ;
              }
@@ -235,6 +238,7 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 
 			       run_t.gKeyMode=0;
+				   run_t.gKeyInput_flag=1;
 				  aiflag = aiflag ^ 0x01;
 				   if(aiflag ==1){
  					   run_t.gAi=1;
@@ -346,8 +350,9 @@ void RunCommand_Order(void)
 	        AI_Function_OnOff();
 	  }
 	   
-      if( run_t.gTimer_60ms==1){
+      if( run_t.gTimer_60ms==1 ){
 	  	 run_t.gTimer_60ms=0;
+		 //run_t.gKeyInput_flag=0;
 	     Display_Function_OnOff();
       }
 	

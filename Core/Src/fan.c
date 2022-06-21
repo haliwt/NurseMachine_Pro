@@ -26,7 +26,7 @@ void AI_Function_OnOff(void)
 		}
 		else{ //1 -OFF
 			     run_t.gAi_Led =1;
-				 run_t.gAi_fun =1;
+				 run_t.gAi_fun =1; //tunr off AI function 
 				PLASMA_SetLow();
 				HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//ultrasnoic off
 				
@@ -41,18 +41,16 @@ void AI_Function_OnOff(void)
 				
 				run_t.gAi_Led =1;
 				run_t.gAi_fun =1;
-			    run_t.gDry =1;
 			  
-				   PTC_SetLow(); //PTC turn off 
-				   FAN_Stop();
+			  PTC_SetLow(); //PTC turn off 
+			  FAN_Stop();
 
 		}
 				
          if(run_t.gDry==0){ //dry is works this fan must be works
 			  
-                     
-					 FAN_CCW_RUN();
-					 PTC_SetHigh();
+                FAN_CCW_RUN();
+				PTC_SetHigh();
 		}
 		 else{
 
@@ -63,15 +61,16 @@ void AI_Function_OnOff(void)
 
 
     //adjust AI function On or Off
-     if(run_t.gAi_fun ==0){
+    if(run_t.gAi_fun ==0){
 
 
-       if(run_t.gAi_Led ==1 && run_t.gDry ==1 && run_t.gPlasma==1 &&run_t.gFan==1){
+	       if(run_t.gAi_Led ==1 && run_t.gDry ==1 && run_t.gPlasma==1 &&run_t.gFan==1){
 
-	      run_t.gAi=0; //Turn On AI
+		      run_t.gAi=0; //Turn On AI
 
 
-	   }
+		   }
+       
 
 	   if(run_t.gAi==0){ //On 
 	    FAN_CCW_RUN();
@@ -87,8 +86,9 @@ void AI_Function_OnOff(void)
 	    PTC_SetLow();
 		FAN_Stop();
 	    }
-   }
+     }
   }
+  
 
 void Buzzer_On(void)
 {
