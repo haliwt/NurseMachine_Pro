@@ -5,8 +5,7 @@
 static void DHT11_Mode_IPU(void);
 static void DHT11_Mode_Out_PP(void);
 static uint8_t DHT11_ReadByte(void);
-unsigned char   ple[]="0123456789";
-extern DHT11_Data_TypeDef DHT11_Data;
+DHT11_Data_TypeDef DHT11_Data_Strc;
 #define Bit_RESET 0
 #define Bit_SET   1
 

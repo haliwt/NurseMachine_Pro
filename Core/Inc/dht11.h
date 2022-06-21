@@ -39,6 +39,7 @@ typedef struct
   float    humidity;            //实际湿度
   float    temperature;        //实际温度  
 } DHT11_Data_TypeDef;
+extern DHT11_Data_TypeDef DHT11_Data_Strc;
 
 
 /* 扩展变量 ------------------------------------------------------------------*/

@@ -62,12 +62,16 @@ void AI_Function_OnOff(void)
 		}
 
 
+    //adjust AI function On or Off
+     if(run_t.gAi_fun ==0){
 
 
+       if(run_t.gAi_Led ==1 && run_t.gDry ==1 && run_t.gPlasma==1 &&run_t.gFan==1){
+
+	      run_t.gAi=0; //Turn On AI
 
 
-
-   if(run_t.gAi_fun ==0){
+	   }
 
 	   if(run_t.gAi==0){ //On 
 	    FAN_CCW_RUN();

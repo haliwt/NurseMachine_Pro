@@ -92,14 +92,13 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 			 	 
              
-			  	if(run_t.gKeyMode ==0 && run_t.gKeyLong ==0){
+			  	if(run_t.gKeyMode ==0){
 				   run_t.gKeyMode++;
 				   run_t.gTimer_4s=0;
                    run_t.gTimer_3s=0;
 				}
 			    
-              
-           if(run_t.gTimer_3s  >1){  //Mode key be pressed long 
+            if(run_t.gTimer_3s  >1){  //Mode key be pressed long 
                run_t.gKeyLong =1;
                 run_t.gTimer_key_5s=0;
                 run_t.gKeyValue++ ;
@@ -114,7 +113,8 @@ void RunCommand_Mode(uint8_t sig)
 			   run_t.gRun_flag= RUN_SIG ;
 			
            }
-
+		   
+          }
 		break;
          
          case 0x20: //CIN2 ->ADD KEY
@@ -132,18 +132,18 @@ void RunCommand_Mode(uint8_t sig)
                     run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =1; //timer is 5s start be pressed key 
 				 }
 				 else{
+                      run_t.gTimer_adtem=1; //don't be key pressed long times
+					//  run_t.gKey_display_timer=0;//don't input timer of times edit funciton
+				      run_t.gSig =1;
+					 //setup temperature of value 
 
-                     run_t.gTimer_adtem=1;
-					   run_t.gKey_display_timer=0;//don't input timer of times edit funciton
-				     if(run_t.gSig==0){
-						run_t.gSig ++;
-						run_t.gTimes_hours_temp =12;
+					 run_t.gTemperature ++;
 
-					}
-
-					  run_t.gTimes_hours_temp++;
-					  if(run_t.gTimes_hours_temp >24)
-					  	 run_t.gTimes_hours_temp=0;
+					 if(run_t.gTemperature < 20)run_t.gTemperature= 21;
+					
+					 
+					 if(run_t.gTemperature >40) run_t.gTemperature=20;
+					
 				 }
 			 
 			 	 run_t.gRun_flag= RUN_SIG ;
@@ -156,6 +156,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x10: //CIN3 -> DEC KEY
              if(run_t.gPower_On ==1){
 			 	  run_t.gKeyMode=0;
+				  // setup Timer of times 
 			 	  if( run_t.gKeyLong ==1){
                       run_t.gTimer_key_5s=0;//run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
               
@@ -168,17 +169,12 @@ void RunCommand_Mode(uint8_t sig)
 				 }
 				 else{
                       
-                     run_t.gTimer_adtem=1;
-					 run_t.gKey_display_timer=0;
-					 if(run_t.gSig==0){
-						run_t.gSig ++;
-						run_t.gTimes_hours_temp =12;
-
-					}
-
-					  run_t.gTimes_hours_temp--;
-					  if(run_t.gTimes_hours_temp <0)
-					  	 run_t.gTimes_hours_temp=24;
+                    run_t.gTimer_adtem=1;//don't be key pressed long times
+					// run_t.gKey_display_timer=0;
+					 run_t.gSig =1;
+					//setup temperature of value 
+					 run_t.gTemperature --;
+					 if(run_t.gTemperature<20) run_t.gTemperature=40;
 				 }
 			 
 			 	 run_t.gRun_flag= RUN_SIG ;
@@ -271,10 +267,10 @@ void RunCommand_Mode(uint8_t sig)
        
        } //switch(ReceiveBuffer) --end 
       
-    }
+  }
 	
   
-}
+
 
 /**********************************************************************
 *
@@ -303,7 +299,8 @@ void RunCommand_Order(void)
 				 run_t.gPlasma=0;
 				 run_t.gDry=0;
 				 run_t.gAi_Led =0;
-				
+				run_t.gTemperature =0;
+				run_t.gSig = 0;
 
 				  run_t.gTimer_Cmd=0; //timer of command "1"->timer is start
 				  run_t.gTimes_hours=0;
@@ -313,6 +310,9 @@ void RunCommand_Order(void)
 				  run_t.gKey_display_timer=0;
 				  run_t.gTimer_adtem =0;
 				  run_t.gDht11_flag=0; //the first power on display "00"
+				  run_t.gTimes_hours_temp=12;
+				  run_t.gTimes_minutes_temp=0;
+				  run_t.gSig = 0;
 				  ShutDown_AllFunction();
                   
 			  	
@@ -354,7 +354,20 @@ void RunCommand_Order(void)
 			run_t.gTimer_3s=0;
 			run_t.gKeyMode =0;
 			Display_DHT11_Value(&DHT11);
-		
+		   //DHT11_Data->temp_high8bit
+		   if(run_t.gSig ==1){
+			   if(run_t.gTemperature > DHT11.temp_high8bit){
+
+					//Open dry function
+					run_t.gDry=0;
+
+			   }
+			   else{
+
+			     run_t.gDry=1;
+
+			   }
+		   }
 		    
 		}
 		
@@ -386,7 +399,7 @@ static void Timer_Handle(void)
 	if( run_t.gTimer_30ms==1 || run_t.gKeyLong ==1){
 
 	run_t.gTimer_30ms=0;
-	if(run_t.gKeyLong ==1 || run_t.gKey_display_timer==1){	//gkey_
+	if(run_t.gKeyLong ==1 || run_t.gKey_display_timer ==1){	//gkey_
 		
 
 	   if(run_t.gKey_display_timer ==1 || run_t.gKeyLong ==1 ){
@@ -419,7 +432,8 @@ static void Timer_Handle(void)
 			
 			 
 			  if(run_t.gTimer_10ms==1){
-				   Times_Led_IndicationOnOff(1); //Off
+			  	  run_t.gTimer_10ms=0;
+				  Times_Led_IndicationOnOff(1); //Off
 				}
 			  else{
 				 Times_Led_IndicationOnOff(0); //On
@@ -432,9 +446,9 @@ static void Timer_Handle(void)
 		run_t.gKey_display_timer=0;//display Timers of hours but don't edit hours numbers
 
 	}
-	else{ //normal display times 
-			   run_t.gTimer_30ms=0;
-                if(run_t.gTimer_Cmd==1 && run_t.gTimer_adtem !=1){
+	else{ //normal display temperature
+			 run_t.gTimer_30ms=0;
+             if(run_t.gTimer_Cmd==1 && run_t.gTimer_adtem !=1){
 
                 
 				m = (run_t.gTimes_hours /10) ;
@@ -442,26 +456,28 @@ static void Timer_Handle(void)
 				p = (run_t.gTimes_minutes /10);
 				q=  (run_t.gTimes_minutes %10);
 
-
 			}
 			else{
-				run_t.gTimer_adtem =0;
+				if(run_t.gTimer_Cmd ==1) run_t.gTimer_adtem =0;
 				if(run_t.gSig==0){
-					run_t.gSig ++;
-					run_t.gTimes_hours_temp =12;
-					run_t.gTimes_minutes_temp=0;
+					m = (run_t.gTimes_hours_temp /10) ;
+				    n=	(run_t.gTimes_hours_temp%10); 
+					p = (run_t.gTimes_minutes_temp /10);
+					q=  (run_t.gTimes_minutes_temp %10);
+				
 				}
-				m = (run_t.gTimes_hours_temp /10);
-				n=	(run_t.gTimes_hours_temp %10);
-				p = (run_t.gTimes_minutes_temp /10);
-				q=  (run_t.gTimes_minutes_temp %10);
-			    
-
+				else{
+					m = (run_t.gTemperature /10);
+					n=	(run_t.gTemperature %10);
+					p=0;
+					q=0;
+				}
+				
 		    }
+			
+			 TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
 
-		  TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
-		 
-		}
+		 }
 	}
 
 

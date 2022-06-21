@@ -105,6 +105,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim3);
   /* Infinite loop */
    run_t.gRun_flag= IDEL_SIG ;
+  run_t.gTimes_hours_temp =12;
+   run_t.gTimes_minutes_temp=0;
   /* USER CODE BEGIN WHILE */
   while (1)
   {
