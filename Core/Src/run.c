@@ -498,12 +498,14 @@ static void Timer_Handle(void)
 		 if(run_t.gTimes_hours >0){	 
 		      run_t.gTimer_Cmd=1;	  //timer is times start  
 		      run_t.gTimes_minutes =0;
-		      run_t.gTimer_flag=0;
+		      run_t.gTimer_flag=0; //hours add of flag,
 			  
 		 }
 		 else{
+		 	run_t.gTimes_hours=0;
 		    run_t.gTimer_Cmd=0;
 			run_t.gTimes_minutes =0;
+
          }
 		run_t.gKeyLong =0;		
 	}
