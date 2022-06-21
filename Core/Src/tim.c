@@ -407,6 +407,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                    if(t6==60){ //1 minute
                       t6=0;
 					  t10++;
+				      if(run_t.gSig ==1){
+							// run_t.gTemp_flag =1;
+						    run_t.gTimer_adtem =1;
+                        }
 				      
                       if(t10<61){ //timer is times 1 hour
 					  	
@@ -416,7 +420,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						  	  t10 = 0 ;
 						  	  run_t.gTimer_flag=0;
 							  run_t.gTimes_minutes=0;
-	                          
+                            
+	                         
 						  }
 
 						 if(run_t.gTimer_flag==0){
@@ -451,13 +456,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						   }
 
 						  }
-                      	} 
+                    } 
 
 					
                      
 
                    }
-			       else {
+			       else { //short times for key
 						
                        tm6++;
 					   if(tm6==60){ //60s 1 muintes
@@ -473,6 +478,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 								}
 
 						   }
+
+						    if(run_t.gSig ==1){
+							  	  run_t.gTemp_flag =1;
+								  run_t.gSig_flag =1;
+                              }
 
 
                        }

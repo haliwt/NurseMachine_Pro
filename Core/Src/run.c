@@ -136,13 +136,14 @@ void RunCommand_Mode(uint8_t sig)
 					//  run_t.gKey_display_timer=0;//don't input timer of times edit funciton
 				      run_t.gSig =1;
 					 //setup temperature of value 
+					 run_t.gSig_flag =1;
 
 					 run_t.gTemperature ++;
 
 					 if(run_t.gTemperature < 20)run_t.gTemperature= 21;
 					
 					 
-					 if(run_t.gTemperature >40) run_t.gTemperature=20;
+					 else if(run_t.gTemperature >40) run_t.gTemperature=20;
 					
 				 }
 			 
@@ -172,6 +173,7 @@ void RunCommand_Mode(uint8_t sig)
                     run_t.gTimer_adtem=1;//don't be key pressed long times
 					// run_t.gKey_display_timer=0;
 					 run_t.gSig =1;
+				      run_t.gSig_flag =1;
 					//setup temperature of value 
 					 run_t.gTemperature --;
 					 if(run_t.gTemperature<20) run_t.gTemperature=40;
@@ -283,7 +285,7 @@ void RunCommand_Mode(uint8_t sig)
 **********************************************************************/
 void RunCommand_Order(void)
 {
-   
+
 	switch(run_t.gRun_flag){
 
       case IDEL_SIG :
@@ -314,6 +316,7 @@ void RunCommand_Order(void)
 				  run_t.gTimes_hours_temp=12;
 				  run_t.gTimes_minutes_temp=0;
 				  run_t.gSig = 0;
+				   run_t.gSig_flag =0;
 				  ShutDown_AllFunction();
                   
 			  	
@@ -351,34 +354,25 @@ void RunCommand_Order(void)
 		
 		if(run_t.gTimer_4s==1 || run_t.gDht11_flag ==0 ){//1s read one data
 		
+			
 			run_t.gTimer_4s =0;
 			run_t.gTimer_3s=0;
 			run_t.gKeyMode =0;
 			Display_DHT11_Value(&DHT11);
 		   //setup temperature and environment 
-		   if(run_t.gSig ==1){
-			   if(run_t.gTemperature > DHT11.temp_high8bit){
-
-					//Open dry function
-					if(run_t.gDry_priority ==0){ //gDry priority
-						run_t.gDry=0;
-					}
-					
-
+		   if(run_t.gTemp_flag == 1){ //60s be check once 
+		       run_t.gTemp_flag =0;
+		       if(run_t.gSig ==1){
+			     if(run_t.gTemperature <= DHT11.temp_high8bit){
+							
+				         run_t.gPower_On=0;
+					     run_t.gRun_flag= IDEL_SIG ; //turn off 
 			   }
-			   else
-			   {
-                 if(run_t.gDry_priority ==0){
-					run_t.gDry=1;
-				 }
-			    
-
-			  }
-		   }
+		    }
 		    
-		}
+		  }
 		
-		
+	   }
 
 	  break;
 
@@ -435,7 +429,7 @@ static void Timer_Handle(void)
 			
 	   TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
 		
-		if(run_t.gKeyLong ==1){
+		if(run_t.gKeyLong ==1){ //long times be pressed blank led
 			
 			 
 			  if(run_t.gTimer_10ms==1){
@@ -453,7 +447,7 @@ static void Timer_Handle(void)
 		run_t.gKey_display_timer=0;//display Timers of hours but don't edit hours numbers
 
 	}
-	else{ //normal display temperature
+	else{ // short times be pressed 
 			 run_t.gTimer_30ms=0;
              if(run_t.gTimer_Cmd==1 && run_t.gTimer_adtem !=1){
 
@@ -465,23 +459,27 @@ static void Timer_Handle(void)
 			    TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
 
 			}
-			else{
-				if(run_t.gTimer_Cmd ==1) run_t.gTimer_adtem =0;
-				if(run_t.gSig==0){
-					m = (run_t.gTimes_hours_temp /10) ;
-				    n=	(run_t.gTimes_hours_temp%10); 
-					p = (run_t.gTimes_minutes_temp /10);
-					q=  (run_t.gTimes_minutes_temp %10);
-					TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
+		    else{
+
+                    if(run_t.gSig==0 || run_t.gSig_flag ==0){ //display normal times don't edit  timer of times 
+
+						m = (run_t.gTimes_hours_temp /10) ;
+					    n=	(run_t.gTimes_hours_temp%10); 
+						p = (run_t.gTimes_minutes_temp /10);
+						q=  (run_t.gTimes_minutes_temp %10);
+						TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
 				
-				}
-				else{
-						m = (run_t.gTemperature /10);
-						n=	(run_t.gTemperature %10);
-					  TM1640_Write_4Bit_TemperatureData(m,n);
 					}
+					else{ //Temperature of setup auto shut off machine
+						
+							m = (run_t.gTemperature /10);
+							n=	(run_t.gTemperature %10);
+					        if(run_t.gTimer_Cmd==1)run_t.gTimer_adtem =0;
+					        else run_t.gSig_flag =0;
+						    TM1640_Write_4Bit_TemperatureData(m,n);
+				       }
 				
-		    }
+		       }
 			
 			
 

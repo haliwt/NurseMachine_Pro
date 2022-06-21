@@ -28,6 +28,8 @@ typedef struct _RUN_T{
    uint8_t gTimer_adtem;
    uint8_t gDht11_flag;
    uint8_t gTemperature;
+   uint8_t gSig_flag ;
+   uint8_t gTemp_flag;
    
 
    uint8_t gKey_display_timer;
@@ -46,7 +48,7 @@ typedef struct _RUN_T{
    uint8_t  gTimer_500ms;
    uint8_t  gTimer_1s;
    uint8_t  gTimer_3s;
-    uint8_t  gTimer_4s;
+   uint8_t  gTimer_4s;
 	
    uint8_t  gTimer_2s;
    uint8_t  gTimer_key_5s;
