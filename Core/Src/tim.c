@@ -408,7 +408,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                       t6=0;
 					  t10++;
 				      if(run_t.gSig ==1){
-							// run_t.gTemp_flag =1;
+							 run_t.gTemp_flag =1; //be check enviornment and tempurature
 						    run_t.gTimer_adtem =1;
                         }
 				      

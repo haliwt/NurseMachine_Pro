@@ -137,13 +137,12 @@ void RunCommand_Mode(uint8_t sig)
 				      run_t.gSig =1;
 					 //setup temperature of value 
 					 run_t.gSig_flag =1;
-
+					 run_t.gTemp_flag=0; //be clear be check setup shut off times ,int timer in counter
 					 run_t.gTemperature ++;
 
 					 if(run_t.gTemperature < 20)run_t.gTemperature= 21;
-					
-					 
 					 else if(run_t.gTemperature >40) run_t.gTemperature=20;
+					 run_t.gTemp_flag =0;
 					
 				 }
 			 
@@ -172,11 +171,13 @@ void RunCommand_Mode(uint8_t sig)
                       
                     run_t.gTimer_adtem=1;//don't be key pressed long times
 					// run_t.gKey_display_timer=0;
-					 run_t.gSig =1;
+					  run_t.gSig =1;
 				      run_t.gSig_flag =1;
+					  run_t.gTemp_flag=0; //be clear be check setup shut off times 
 					//setup temperature of value 
 					 run_t.gTemperature --;
 					 if(run_t.gTemperature<20) run_t.gTemperature=40;
+					  run_t.gTemp_flag =0;
 				 }
 			 
 			 	 run_t.gRun_flag= RUN_SIG ;
@@ -317,6 +318,7 @@ void RunCommand_Order(void)
 				  run_t.gTimes_minutes_temp=0;
 				  run_t.gSig = 0;
 				   run_t.gSig_flag =0;
+				   run_t.gTemp_flag=0;
 				  ShutDown_AllFunction();
                   
 			  	
