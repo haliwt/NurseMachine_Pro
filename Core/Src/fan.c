@@ -60,19 +60,19 @@ void AI_Function_OnOff(void)
 		}
 
 
+		if(run_t.gAi_Led ==1 && run_t.gDry ==1 && run_t.gPlasma==1 &&run_t.gFan==1){
+
+		      run_t.gAi=1; //Turn On AI ^ 0
+
+
+		}
+
+
     //adjust AI function On or Off
     if(run_t.gAi_fun ==0){
 
 
-	       if(run_t.gAi_Led ==1 && run_t.gDry ==1 && run_t.gPlasma==1 &&run_t.gFan==1){
-
-		      run_t.gAi=0; //Turn On AI
-
-
-		   }
-       
-
-	   if(run_t.gAi==0){ //On 
+	    if(run_t.gAi==0){ //On 
 	    FAN_CCW_RUN();
 		PLASMA_SetHigh(); //
 	    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);//ultrasnoic ON 

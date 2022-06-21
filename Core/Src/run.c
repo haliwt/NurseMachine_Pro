@@ -57,7 +57,7 @@ void CProcessRun_Init(void)
 void RunCommand_Mode(uint8_t sig)
 {
      static uint8_t powerflag ,beepflag=0xff;
-	 static uint8_t aiflag;
+	 
 
     if(sig!=0){
 		 if(beepflag !=run_t.gKeyValue){
@@ -239,9 +239,8 @@ void RunCommand_Mode(uint8_t sig)
 
 			       run_t.gKeyMode=0;
 				   run_t.gKeyInput_flag=1;
-				  aiflag = aiflag ^ 0x01;
-				   if(aiflag ==1){
- 					   run_t.gAi=1;
+				  run_t.gAi = run_t.gAi ^ 0x01;
+				  if(run_t.gAi ==1){
 					   run_t.gAi_Led =0;
 			
 					   run_t.gFan=1;
