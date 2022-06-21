@@ -165,10 +165,54 @@ void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     TM1640_Write_OneByte(OpenDispTM1640|0x8f);//0xC2H->GRID3->BIT_3
     TM1640_Stop();
     
+}
+/*******************************************************************************************************
+    *
+*Function Name:void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit)
+*Function :Smg display times hour minute
+*Input Ref: onebit ,twobit hours ,threebit fourbit minute,sl -select "H" or "numbers"
+*Return Ref: NO
+    *
+********************************************************************************************************/
+void TM1640_Write_4Bit_TemperatureData(uint8_t threebit,uint8_t fourbit)
+{
+     TM1640_Start();
+     TM1640_Write_OneByte(AddrFixed);//Add fixed reg
+     TM1640_Stop();
     
+     TM1640_Start();
+     TM1640_Write_OneByte(0xC0);//0xC0H->GRID1->BIT_1
+     TM1640_Write_OneByte(OFFLED);//display "NULL"
+     
+     TM1640_Stop();
     
+     TM1640_Start();
+     TM1640_Write_OneByte(0xC1);//0xC1H->GRID1->BIT_2
+     TM1640_Write_OneByte(OFFLED);//display "NULL"
+     
+     TM1640_Stop();
+    
+
+    
+    //minute 
+    TM1640_Start();
+    TM1640_Write_OneByte(0xC2);//0xC2H->GRID3->BIT_3
+     TM1640_Write_OneByte(segNumber[threebit]);//display ""
+    TM1640_Stop();
+    
+    //minute 
+    TM1640_Start();
+    TM1640_Write_OneByte(0xC3);//0xC2H->GRID3->BIT_3
+    TM1640_Write_OneByte(segNumber[fourbit]);//display ""
+    TM1640_Stop();
+    
+    //open diplay
+    TM1640_Start();
+    TM1640_Write_OneByte(OpenDispTM1640|0x8f);//0xC2H->GRID3->BIT_3
+    TM1640_Stop();
     
 }
+
 /*******************************************************************************************************
     *
 *Function Name:void TM1640_Write_2bit_HumData(uint8_t onebit,uint8_t twobit)

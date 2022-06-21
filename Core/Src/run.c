@@ -215,6 +215,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x02: //CIN6  ->DRY KEY 
                if(run_t.gPower_On ==1){
 				  run_t.gKeyMode=0;
+				  run_t.gDry_priority =1;
 
 			      run_t.gDry = run_t.gDry^ 0x01;
 			      if(run_t.gDry ==0){
@@ -354,19 +355,25 @@ void RunCommand_Order(void)
 			run_t.gTimer_3s=0;
 			run_t.gKeyMode =0;
 			Display_DHT11_Value(&DHT11);
-		   //DHT11_Data->temp_high8bit
+		   //setup temperature and environment 
 		   if(run_t.gSig ==1){
 			   if(run_t.gTemperature > DHT11.temp_high8bit){
 
 					//Open dry function
-					run_t.gDry=0;
+					if(run_t.gDry_priority ==0){ //gDry priority
+						run_t.gDry=0;
+					}
+					
 
 			   }
-			   else{
+			   else
+			   {
+                 if(run_t.gDry_priority ==0){
+					run_t.gDry=1;
+				 }
+			    
 
-			     run_t.gDry=1;
-
-			   }
+			  }
 		   }
 		    
 		}
@@ -455,6 +462,7 @@ static void Timer_Handle(void)
 			    n=	(run_t.gTimes_hours %10); 
 				p = (run_t.gTimes_minutes /10);
 				q=  (run_t.gTimes_minutes %10);
+			    TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
 
 			}
 			else{
@@ -464,18 +472,18 @@ static void Timer_Handle(void)
 				    n=	(run_t.gTimes_hours_temp%10); 
 					p = (run_t.gTimes_minutes_temp /10);
 					q=  (run_t.gTimes_minutes_temp %10);
+					TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
 				
 				}
 				else{
-					m = (run_t.gTemperature /10);
-					n=	(run_t.gTemperature %10);
-					p=0;
-					q=0;
-				}
+						m = (run_t.gTemperature /10);
+						n=	(run_t.gTemperature %10);
+					  TM1640_Write_4Bit_TemperatureData(m,n);
+					}
 				
 		    }
 			
-			 TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
+			
 
 		 }
 	}

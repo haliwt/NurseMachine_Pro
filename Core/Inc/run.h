@@ -60,6 +60,7 @@ typedef struct _RUN_T{
    uint8_t  gPlasma;
    uint8_t  gDry;
    uint8_t  gDry_flag;
+   uint8_t  gDry_priority;
    uint8_t  gAi;
    uint8_t  gAi_Led;
    uint8_t  gAi_fun;
