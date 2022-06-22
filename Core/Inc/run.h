@@ -31,6 +31,7 @@ typedef struct _RUN_T{
    uint8_t gSig_flag ;
    uint8_t gTemp_flag;
    uint8_t gKeyInput_flag;
+   uint8_t gTemp_check;
    
 
    uint8_t gKey_display_timer;

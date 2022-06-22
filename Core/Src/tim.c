@@ -407,10 +407,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                    if(t6==60){ //1 minute
                       t6=0;
 					  t10++;
-				      if(run_t.gSig ==1){
-							 run_t.gTemp_flag =1; //be check enviornment and tempurature
-						    run_t.gTimer_adtem =1;
-                        }
+				      
 				      
                       if(t10<61){ //timer is times 1 hour
 					  	
@@ -450,10 +447,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						  	     tf++;
 						   }
 						   else{
-
-							    run_t.gTimes_minutes=59 - t10;
+                                
+							    run_t.gTimes_minutes=60 - t10;
 
 						   }
+						   if(run_t.gSig ==1){
+							 run_t.gTemp_check =1; //be check enviornment and tempurature
+						    run_t.gTimer_adtem =1;
+                        	}
 
 						  }
                     } 
@@ -480,7 +481,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						   }
 
 						    if(run_t.gSig ==1){
-							  	  run_t.gTemp_flag =1;
+							  	  run_t.gTemp_check =1;
 								  run_t.gSig_flag =1;
                               }
 

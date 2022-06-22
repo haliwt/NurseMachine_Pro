@@ -366,8 +366,8 @@ void RunCommand_Order(void)
 			run_t.gKeyMode =0;
 			Display_DHT11_Value(&DHT11);
 		   //setup temperature and environment 
-		   if(run_t.gTemp_flag == 1){ //60s be check once 
-		       run_t.gTemp_flag =0;
+		   if(run_t.gTemp_check== 1){ //60s be check once 
+		      run_t.gTemp_check =0;
 		       if(run_t.gSig ==1){
 			     if(run_t.gTemperature <= DHT11.temp_high8bit){
 							
