@@ -91,7 +91,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x40: //CIN1 -> MODE KEY
              if(run_t.gPower_On ==1){
 			 	 
-                run_t.gKeyInput_flag=1;
+            
 			  	if(run_t.gKeyMode ==0){
 				   run_t.gKeyMode++;
 				   run_t.gTimer_4s=0;
@@ -111,6 +111,7 @@ void RunCommand_Mode(uint8_t sig)
                run_t.gKey_display_timer=1;
                run_t.gKeyValue++ ;
 			   run_t.gRun_flag= RUN_SIG ;
+			   run_t.gKeyInput_flag=1;
 			
            }
 		   
@@ -121,7 +122,7 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 
 					run_t.gKeyMode=0;
-					run_t.gKeyInput_flag=1;
+					
 				 if( run_t.gKeyLong ==1){
 
 					 run_t.gTimer_key_5s=0;// run_t.gTimer_5s_start =0; //timer is 5s start be pressed key 
@@ -134,7 +135,7 @@ void RunCommand_Mode(uint8_t sig)
 				 }
 				 else{
                       run_t.gTimer_adtem=1; //don't be key pressed long times
-					//  run_t.gKey_display_timer=0;//don't input timer of times edit funciton
+				      run_t.gKeyInput_flag=1;
 				      run_t.gSig =1;
 					 //setup temperature of value 
 					 run_t.gSig_flag =1;
@@ -172,7 +173,7 @@ void RunCommand_Mode(uint8_t sig)
 				 else{
                       
                     run_t.gTimer_adtem=1;//don't be key pressed long times
-					// run_t.gKey_display_timer=0;
+					run_t.gKeyInput_flag=1;
 					  run_t.gSig =1;
 				      run_t.gSig_flag =1;
 					  run_t.gTemp_flag=0; //be clear be check setup shut off times 
@@ -223,7 +224,7 @@ void RunCommand_Mode(uint8_t sig)
          case 0x02: //CIN6  ->DRY KEY 
                if(run_t.gPower_On ==1){
 				  run_t.gKeyMode=0;
-				 run_t.gKeyInput_flag=1;
+			
 
 			      run_t.gDry = run_t.gDry^ 0x01;
 			      if(run_t.gDry == 0)run_t.gFan =0;
@@ -238,7 +239,6 @@ void RunCommand_Mode(uint8_t sig)
              if(run_t.gPower_On ==1){
 
 			       run_t.gKeyMode=0;
-				   run_t.gKeyInput_flag=1;
 				  run_t.gAi = run_t.gAi ^ 0x01;
 				  if(run_t.gAi ==1){
 					   run_t.gAi_Led =0;
@@ -349,8 +349,8 @@ void RunCommand_Order(void)
 	        AI_Function_OnOff();
 	  }
 	   
-      if( run_t.gTimer_60ms==1 ){
-	  	 run_t.gTimer_60ms=0;
+      if( run_t.gTimer_100ms==1 ){
+	  	 run_t.gTimer_100ms=0;
 		 //run_t.gKeyInput_flag=0;
 	     Display_Function_OnOff();
       }
@@ -360,7 +360,6 @@ void RunCommand_Order(void)
 		
 		if(run_t.gTimer_4s==1 || run_t.gDht11_flag ==0 ){//1s read one data
 		
-			
 			run_t.gTimer_4s =0;
 			run_t.gTimer_3s=0;
 			run_t.gKeyMode =0;
@@ -403,9 +402,9 @@ static void Timer_Handle(void)
 {
      static uint8_t m,n,p,q;
 	//mode key long be pressed handle
-	if( run_t.gTimer_30ms==1 || run_t.gKeyLong ==1){
+	if( run_t.gTimer_200ms==1 || run_t.gKeyLong ==1 ||run_t.gKeyInput_flag==1){
 
-	run_t.gTimer_30ms=0;
+	run_t.gTimer_200ms=0;
 	if(run_t.gKeyLong ==1 || run_t.gKey_display_timer ==1){	//gkey_
 		
 
@@ -447,14 +446,12 @@ static void Timer_Handle(void)
 
 			  }
 			
-			
-			
 		}
 		run_t.gKey_display_timer=0;//display Timers of hours but don't edit hours numbers
 
 	}
 	else{ // short times be pressed 
-			 run_t.gTimer_30ms=0;
+			 run_t.gTimer_200ms=0;
              if(run_t.gTimer_Cmd==1 && run_t.gTimer_adtem !=1){
 
                 
@@ -465,7 +462,7 @@ static void Timer_Handle(void)
 			    TM1640_Write_4Bit_Data(m,n,p,q,0) ; //timer is default 12 hours "12:00"
 
 			}
-		    else{
+		    else{ //be shot times key
 
                     if((run_t.gSig==0 || run_t.gSig_flag ==0) && run_t.gTimer_Cmd==0){ //display normal times don't edit  timer of times 
 
@@ -484,6 +481,8 @@ static void Timer_Handle(void)
 					        else run_t.gSig_flag =0;
 						    TM1640_Write_4Bit_TemperatureData(m,n);
 				       }
+
+					run_t.gKeyInput_flag=0;
 				
 		       }
 			
@@ -499,12 +498,14 @@ static void Timer_Handle(void)
 		      run_t.gTimer_Cmd=1;	  //timer is times start  
 		      run_t.gTimes_minutes =0;
 		      run_t.gTimer_flag=0; //hours add of flag,
+		      run_t.gTimer_Counter=0;
 			  
 		 }
 		 else{
 		 	run_t.gTimes_hours=0;
 		    run_t.gTimer_Cmd=0;
 			run_t.gTimes_minutes =0;
+			run_t.gTimer_Counter=0;
 
          }
 		run_t.gKeyLong =0;		

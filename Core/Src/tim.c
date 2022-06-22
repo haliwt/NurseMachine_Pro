@@ -307,8 +307,8 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    static uint8_t temp,t2,t3,t4,t5,t6,t7,t8,t9,t10;
-	static uint8_t tm2,tm3,tm1,tm4,tm5,tm6,tm7,tf;
+    static uint8_t temp,t2,t_1s,t4,t5,t6,t7,t8,t9;
+	static uint8_t tm2,tm3,tm1,tm4,tm5,tm6,tf;
     
     if(htim->Instance==TIM3){
        temp ++ ;
@@ -317,17 +317,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	   tm1++;
 	   tm4++;
 	   tm5++;
-	   tm7++;
+	 
 
 	   if(tm5==50){
 	    tm1=0;
 	    //run_t.gTimer_5ms =1;
 	    run_t.gTimer_50ms =1;
 
-	   }
-	   if(tm7==60){
-          tm7=0;
-		  run_t.gTimer_60ms =1;
 	   }
 
 	   if(tm1==10){
@@ -357,10 +353,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
        if(temp ==100){ //100ms
           temp =0;
           t2++;
-          t3++;
 		  t5++;
 		  t8++;
 		  t9++;
+		  t_1s++;
+		  run_t.gTimer_100ms=1;
 		  if(t8==3){ //300ms
               t8=0;
              run_t.gTimer_300ms = 1;
@@ -380,11 +377,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 t5= 0;
                 run_t.gTimer_500ms=1 ;
            }
-		  //1s
-          if(t3==10){ //100 *10 =1000ms = 1s
-              t3=0;
+
+
+		  
+		  //1s of times 
+          if(t_1s==10){ //100 *10 =1000ms = 1s
+              t_1s=0;
               t4++;
 		      t7++;
+
+			  
 			 if(t7==4){
 			 	t7=0;
 			 	run_t.gTimer_4s=1;
@@ -401,20 +403,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 t4= 0;
                 run_t.gTimer_2s =1 ;
               }
+
+
+
              
+             //timer of times
+			  
               if(run_t.gTimer_Cmd ==1){//1s
                    t6++;
                    if(t6==60){ //1 minute
                       t6=0;
-					  t10++;
+					  run_t.gTimer_Counter++;//t10++;
 				      
 				      
-                      if(t10<61){ //timer is times 1 hour
+                      if( run_t.gTimer_Counter<61){ //timer is times 1 hour
 					  	
 						  
 						  
-						  if(t10==60){
-						  	  t10 = 0 ;
+						  if( run_t.gTimer_Counter==60){
+
+							 run_t.gTimer_Counter= 0 ;
 						  	  run_t.gTimer_flag=0;
 							  run_t.gTimes_minutes=0;
                             
@@ -427,7 +435,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						     run_t.gTimes_minutes=59;
 
 							 
-							 if(run_t.gTimes_hours < 0 ){
+							if(run_t.gTimes_hours < 0 ){
 													   
 							 run_t.gTimes_hours =0;
 							 run_t.gTimes_minutes=0;
@@ -448,7 +456,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						   }
 						   else{
                                 
-							    run_t.gTimes_minutes=60 - t10;
+							    run_t.gTimes_minutes=60 - run_t.gTimer_Counter;
 
 						   }
 						   if(run_t.gSig ==1){
@@ -456,13 +464,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 						    run_t.gTimer_adtem =1;
                         	}
 
-						  }
-                    } 
-
-					
-                     
-
-                   }
+					}
+                   	}
+              	   }
 			       else { //short times for key
 						
                        tm6++;
