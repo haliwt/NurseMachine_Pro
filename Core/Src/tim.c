@@ -307,51 +307,83 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    static uint8_t temp,t2,t_1s,t5,t6,t7,t8;
-	static uint8_t tm2,tm3,tm6,tf;
+    static uint8_t temp,t2,t_1s,t4,t5,t6,t7,t8,t9;
+	static uint8_t tm2,tm3,tm1,tm4,tm5,tm6,tf;
     
     if(htim->Instance==TIM3){
        temp ++ ;
 	   tm2++;
        tm3++;
+	   tm1++;
+	   tm4++;
+	   tm5++;
 	 
-	 
-	    if(tm3==20){
-	   	 tm3=0;
-		   run_t.gTimer_20ms =1;
 
+	   if(tm5==50){
+	    tm1=0;
+	    //run_t.gTimer_5ms =1;
+	    run_t.gTimer_50ms =1;
+
+	   }
+
+	   if(tm1==10){
+         tm1=0;
+	     run_t.gTimer_10ms =1;
+
+	   }
+	   if(tm4==15)
+	   {
+          tm4=0;
+		  run_t.gTimer_15ms =1;
+
+	   }
+	
+	   if(tm3==20){
+	   	 tm3=0;
+		 run_t.gTimer_20ms =1;
+
+	   }
+	   if(tm2==30){
+          tm2=0;
+		  run_t.gTimer_30ms =1;
 	   }
 
 	   
 
-      if(temp ==100){ //100ms
+       if(temp ==100){ //100ms
           temp =0;
           t2++;
 		  t5++;
-          t8++;
+		  t8++;
+		  t9++;
 		  t_1s++;
 		  run_t.gTimer_100ms=1;
 		  if(t8==3){ //300ms
               t8=0;
              run_t.gTimer_300ms = 1;
 		  }
-      	if(t2 ==2){ //200ms
+          if(t2 ==2){ //200ms
              t2=0;
             run_t.gTimer_200ms = 1;
           
           }
 
-		 
+		  if(t9==4){
+			  t9= 0;
+			 run_t.gTimer_400ms=1 ;
+
+		  }
 		  if(t5==5){ //500ms
-          t5= 0;
-          run_t.gTimer_500ms=1 ;
-      }
+                t5= 0;
+                run_t.gTimer_500ms=1 ;
+           }
 
 
 		  
 		  //1s of times 
           if(t_1s==10){ //100 *10 =1000ms = 1s
               t_1s=0;
+              t4++;
 		      t7++;
 
 			  
@@ -361,10 +393,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			 }
 
 			 
+             run_t.gTimer_1s =1;
              run_t.gTimer_3s ++;
              run_t.gTimer_key_5s ++;
 					
-            //timer of times
+              
+             
+              if(t4==2){
+                t4= 0;
+                run_t.gTimer_2s =1 ;
+              }
+
+
+
+             
+             //timer of times
 			  
               if(run_t.gTimer_Cmd ==1){//1s
                    t6++;

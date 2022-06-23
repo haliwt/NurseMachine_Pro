@@ -35,7 +35,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
- uint8_t   ReadKeyValue;
+ //uint8_t   ReadKeyValue;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -115,11 +115,17 @@ int main(void)
         
        if(run_t.gTimer_20ms ==1){
 	   	run_t.gTimer_20ms=0;
-        I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,1);
-	    RunCommand_Mode( ReceiveBuffer[0]);
+        if(I2C_Read_From_Device(SC12B_ADDR,0x08,ReceiveBuffer,2)==DONE){
+              
+               RunCommand_Mode(ReceiveBuffer[0]);
+               run_t.gTouch_key = 1;
+          }
+        else{
+          run_t.gTouch_key = 0;
+        
+        }
        }
       
-	   
 	   RunCommand_Order();
        
        

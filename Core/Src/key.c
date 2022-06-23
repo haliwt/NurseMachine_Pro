@@ -51,7 +51,7 @@ static void Delay_I2C(uint8_t t)
 	{
        for(int i = 0; i <30; i++)//better for(int i = 0; i < 40; i++)    //for(int i = 0; i < 20; i++)    
         {
-            __asm("NOP");//等待1个指令周期，系统主频16M
+            __asm("NOP");//等待1个指令周期，系统主频24M
            
         }
 	}
@@ -239,10 +239,10 @@ void ICman_Init_SET(unsigned char SC_ADDR)
      //               0x8A  0x9B  0xAC  0xBC  0xCD  0xDE  0xEF  0xFF 	
 				databuf = 0xFF;
 				while(I2C_Write_To_Device(SC_ADDR,SenSet0_REG,&databuf) !=DONE);	
-				//databuf = 0x79;
-				//while(I2C_Write_To_Device(SC_ADDR,SenSetCOM_REG,&databuf) !=DONE);	
+				databuf = 0xFF;
+				while(I2C_Write_To_Device(SC_ADDR,SenSetCom_REG,&databuf) !=DONE);	
 			 //////////非必要，不建议修改，不用直接注释掉/////////////////////////////
-			 //databuf = SLPCYC_3R5T | SLOW_TO_SLEEP | NOTHOLD | KVF_50S_CORREC | RTM3;
+			 //databuf = SLPCYC_0R5T | SLOW_TO_SLEEP | HOLD | KVF_STOP_CORREC | RTM0;
 			 //while(I2C_Write_To_Device(SC_ADDR,CTRL0_REG,&databuf)!=DONE);	
 				
 				//////////无必要，不建议修改，不用直接注释掉/////////////////////////

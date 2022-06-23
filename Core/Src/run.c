@@ -10,8 +10,8 @@
 
 
 DHT11_Data_TypeDef DHT11;
-uint8_t ReceiveBuffer[1];
 
+uint8_t ReceiveBuffer[2];
 static CProcess1 cprocess;
 RUN_T run_t; 
 
@@ -40,12 +40,6 @@ void CProcessRun_Init(void)
    CProcessInit(&cprocess);
 
 }
-
-
- 
-
-    
-
 /**********************************************************************
 *
 *Functin Name: void RunCommand_Mode(unit8_t sig)
@@ -58,27 +52,25 @@ void RunCommand_Mode(uint8_t sig)
 {
      static uint8_t powerflag ,beepflag=0xff;
 	 
-
-    if(sig!=0){
-		 if(beepflag !=run_t.gKeyValue){
-		 	beepflag = run_t.gKeyValue ;
-            Buzzer_On();
-			
-		 }
-     }
-	 else{
-         return ;
-
-	 }
+    if(run_t.gTouch_key ==1){
+        if(sig!=0){
+             if(beepflag !=run_t.gKeyValue){
+                beepflag = run_t.gKeyValue ;
+                Buzzer_On();
+                
+             }
+         }
+     
 	 
-       switch(sig){
+     
+     switch(sig){
 	   	
         case 0x80: //CIN0 -> POWER KEY 
              powerflag = powerflag ^ 0x01;
              if(powerflag == 1){
 			 	run_t.gRun_flag= RUN_SIG ;
 			 	run_t.gPower_On =1;
-				 
+				run_t.gKeyValue++;
              }
              else{
                  Smg_AllOff();
@@ -105,6 +97,7 @@ void RunCommand_Mode(uint8_t sig)
 			    run_t.gKeyMode=0;
 			   run_t.gTimer_3s=0;
 			   run_t.gRun_flag= RUN_SIG ;
+                run_t.gKeyValue++;
 			 
            } 
            else if(run_t.gKeyLong ==0){ //shot be pressed 
@@ -112,13 +105,14 @@ void RunCommand_Mode(uint8_t sig)
                run_t.gKeyValue++ ;
 			   run_t.gRun_flag= RUN_SIG ;
 			   run_t.gKeyInput_flag=1;
+               run_t.gKeyValue++;
 			
            }
 		   
           }
 		break;
          
-         case 0x20: //CIN2 ->ADD KEY
+         case 0x10: //CIN2 ->ADD KEY
              if(run_t.gPower_On ==1){
 
 					run_t.gKeyMode=0;
@@ -147,7 +141,7 @@ void RunCommand_Mode(uint8_t sig)
 					 run_t.gTemp_flag =0;
 					
 				 }
-			 
+			     run_t.gKeyValue++;
 			 	 run_t.gRun_flag= RUN_SIG ;
              
              	}
@@ -155,7 +149,7 @@ void RunCommand_Mode(uint8_t sig)
              
          break;
          
-         case 0x10: //CIN3 -> DEC KEY
+         case 0x20: //CIN3 -> DEC KEY
              if(run_t.gPower_On ==1){
 			 	  run_t.gKeyMode=0;
 				  run_t.gKeyInput_flag=1;
@@ -182,7 +176,7 @@ void RunCommand_Mode(uint8_t sig)
 					 if(run_t.gTemperature<20) run_t.gTemperature=40;
 					  run_t.gTemp_flag =0;
 				 }
-			 
+                run_t.gKeyValue++;
 			 	 run_t.gRun_flag= RUN_SIG ;
              
              }
@@ -198,7 +192,7 @@ void RunCommand_Mode(uint8_t sig)
 			    run_t.gFan =run_t.gFan^ 0x01;
 				if(run_t.gFan == 1)run_t.gDry =1;
 			     
-				
+				run_t.gKeyValue++;
 			   	 run_t.gRun_flag= RUN_SIG ;
                 
                
@@ -213,7 +207,7 @@ void RunCommand_Mode(uint8_t sig)
 			 run_t.gKeyInput_flag=1;
 
 			   run_t.gPlasma =run_t.gPlasma ^ 0x01;
-				
+				run_t.gKeyValue++;
                run_t.gRun_flag= RUN_SIG ;
              
              }
@@ -228,7 +222,7 @@ void RunCommand_Mode(uint8_t sig)
 
 			      run_t.gDry = run_t.gDry^ 0x01;
 			      if(run_t.gDry == 0)run_t.gFan =0;
-				  
+				  run_t.gKeyValue++;
                   run_t.gRun_flag= RUN_SIG ;
              }
            
@@ -262,6 +256,8 @@ void RunCommand_Mode(uint8_t sig)
 						 run_t.gAi_Led =0;
 					
 						}
+                   
+                        run_t.gKeyValue++;
                       run_t.gRun_flag= RUN_SIG ;
 
              }
@@ -276,8 +272,7 @@ void RunCommand_Mode(uint8_t sig)
       
   }
 	
-  
-
+  }
 
 /**********************************************************************
 *
@@ -306,8 +301,8 @@ void RunCommand_Order(void)
 				 run_t.gPlasma=0;
 				 run_t.gDry=0;
 				 run_t.gAi_Led =0;
-				run_t.gTemperature =0;
-				run_t.gSig = 0;
+				run_t.gTemperature =19;
+				
 
 				  run_t.gTimer_Cmd=0; //timer of command "1"->timer is start
 				  run_t.gTimes_hours=0;
@@ -324,22 +319,13 @@ void RunCommand_Order(void)
 				   run_t.gTemp_flag=0;
 				  ShutDown_AllFunction();
                   
-			  	
-			  
-			   
-	  	 	}
+		}
+		Breath_Led();
 		
-	 
-          
-           Breath_Led();
-		
-		 
-
-
-	  break;
+		break;
 
 	  case  RUN_SIG: //1
-		 run_t.gKeyValue++;
+		
 		
 	   if(run_t.gTimer_500ms ==1){
 		
@@ -381,14 +367,7 @@ void RunCommand_Order(void)
 
 	  break;
 
-	  
-
-	 }
-
-
-
-
-
+	}
 }
 /**********************************************************************
 *
@@ -423,21 +402,12 @@ static void Timer_Handle(void)
 				 else{
                     m = ((run_t.gTimes_hours + 1)/10) ;
 			        n=	((run_t.gTimes_hours+1) %10);
-					
-                    
-				 }
- 
-			}
-			
-		   }
-		
-			
-	   TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
-		
+					}
+ 				}
+		}
+		TM1640_Write_4Bit_Data(0,0,m,n,1) ; //timer is default 12 hours "H0:12"
 		if(run_t.gKeyLong ==1){ //long times be pressed blank led
-			
-			 
-			  if(run_t.gTimer_10ms==1){
+			 if(run_t.gTimer_10ms==1){
 			  	  run_t.gTimer_10ms=0;
 				  Times_Led_IndicationOnOff(1); //Off
 				}
@@ -445,10 +415,8 @@ static void Timer_Handle(void)
 				 Times_Led_IndicationOnOff(0); //On
 
 			  }
-			
-		}
+		 }
 		run_t.gKey_display_timer=0;//display Timers of hours but don't edit hours numbers
-
 	}
 	else{ // short times be pressed 
 			 run_t.gTimer_200ms=0;
@@ -481,18 +449,11 @@ static void Timer_Handle(void)
 					        else run_t.gSig_flag =0;
 						    TM1640_Write_4Bit_TemperatureData(m,n);
 				       }
-
 					run_t.gKeyInput_flag=0;
-				
-		       }
-			
-			
-
-		 }
+				}
+			}
 	}
-
-
-	//timer is times
+    //timer is times
 	if(run_t.gTimer_key_5s >10 &&  run_t.gKeyLong ==1){
 		 if(run_t.gTimes_hours >0){	 
 		      run_t.gTimer_Cmd=1;	  //timer is times start  
@@ -510,9 +471,6 @@ static void Timer_Handle(void)
          }
 		run_t.gKeyLong =0;		
 	}
-
-
-
 }
 
 

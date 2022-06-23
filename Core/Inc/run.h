@@ -33,7 +33,7 @@ typedef struct _RUN_T{
    uint8_t gKeyInput_flag;
    uint8_t gTemp_check;
    uint8_t gTimer_Counter;
-   
+   uint8_t gTouch_key;
 
    uint8_t gKey_display_timer;
 
@@ -79,7 +79,7 @@ typedef struct _RUN_T{
 }RUN_T;
 
 #define CProcessInit(me_) ((me_)->cmdCtr__ =0,(me_)->state__ = IDLE)
-extern uint8_t ReceiveBuffer[1];
+extern uint8_t ReceiveBuffer[2];
 extern RUN_T run_t; 
 
 //void CProcessRun_Init(void);

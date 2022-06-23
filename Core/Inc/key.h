@@ -45,19 +45,24 @@
 #define RTM2                         2
 #define RTM3                         3
 
-
-#define KVF_STOP_CORREC              (1<<2)  //touch is avail ,touch don't need calibration 
-#define KVF_50S_CORREC              (0<<2)  //touch is avail ,50s start  calibration
-#define HOLD             (1<<3)  //base line  ,don't need  calibration
-#define NOTHOLD         (0<<3)    //base line ,continue calibration
-#define SLPCYC_LGT       (0<<5)   //infint maxmium 
-#define SLPCYC_0R5T       (1<<5)   //to sleep for sample interval 60ms 
-#define SLPCYC_0R5T       (1<<5)   //to sleep for sample interval 60ms 
-#define SLPCYC_5R5T       (6<<5)   //to sleep for sample interval 660ms 
-#define SLPCYC_6R5T       (7<<5)   //to sleep for sample interval 780ms 
-
-#define FAST_T0_SLEEP      (1<<4)    //fast input sleep 
-
+//个采样周期有效， 1 个采样周期判断无效
+#define RTM1 								1 									//4 个采样周期有效， 2 个采样周期判断无效
+#define RTM2 								2 									//5 个采样周期有效， 3 个采样周期判断无效
+#define RTM3								3 									//6 个采样周期有效， 4 个采样周期判断无效
+#define KVF_STOP_CORREC 		(1u<<2)							// 按键有效，触摸不校准
+#define KVF_50S_CORREC 			(0u<<2) 						// 按下有效后， 50S 开始校准
+#define HOLD 								(1u<<3) 						//基线保持不校准
+#define NOTHOLD 						(0u<<3) 						//基线持续校准
+#define SLPCYC_LGT 					(0u<<5) 						//无穷大
+#define SLPCYC_0R5T 				(1u<<5) 						//休眠后采样间隔 60MS
+#define SLPCYC_1R5T 				(2u<<5) 						//休眠后采样间隔 180MS
+#define SLPCYC_2R5T 				(3u<<5) 						//休眠后采样间隔 300MS
+#define SLPCYC_3R5T 				(4u<<5) 						//休眠后采样间隔 420MS
+#define SLPCYC_4R5T 				(5u<<5) 						//休眠后采样间隔 540MS
+#define SLPCYC_5R5T 				(6u<<5) 						//休眠后采样间隔 660MS
+#define SLPCYC_6R5T				 	(7u<<5) 						//休眠后采样间隔 780MS
+#define FAST_TO_SLEEP 			(1u<<4) 						//快速进入休眠
+#define SLOW_TO_SLEEP 			(0u<<4) 						// 75S 进入休眠
 
 typedef enum
 {
